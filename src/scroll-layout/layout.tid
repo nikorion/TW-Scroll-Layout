@@ -1,0 +1,52 @@
+title: $:/plugins/nikorion/scroll-layout/layout
+tags: $:/tags/Layout
+name: Scroll Layout
+description: Story river with independent scrollbar — only sidebar tab content scrolls
+icon: $:/core/images/layout-button
+code-body: yes
+
+\whitespace trim
+\import [subfilter{$:/core/config/GlobalImportFilter}]
+
+<$vars
+	tv-config-toolbar-icons={{$:/config/Toolbar/Icons}}
+	tv-config-toolbar-text={{$:/config/Toolbar/Text}}
+	tv-config-toolbar-class={{$:/config/Toolbar/ButtonClass}}
+	tv-enable-drag-and-drop={{$:/config/DragAndDrop/Enable}}
+	tv-show-missing-links={{$:/config/MissingLinks}}
+	storyviewTitle={{$:/view}}
+	languageTitle={{{ [{$:/language}get[name]] }}}>
+
+<div class={{{ [all[shadows+tiddlers]tag[$:/tags/ClassFilters/PageTemplate]!is[draft]] :map:flat[subfilter{!!text}] tc-page-container [[tc-page-view-]addsuffix<storyviewTitle>] [[tc-language-]addsuffix<languageTitle>] :and[unique[]join[ ]] }}} >
+
+<$navigator story="$:/StoryList" history="$:/HistoryList" openLinkFromInsideRiver={{$:/config/Navigation/openLinkFromInsideRiver}} openLinkFromOutsideRiver={{$:/config/Navigation/openLinkFromOutsideRiver}} relinkOnRename={{$:/config/RelinkOnRename}}>
+
+<$dropzone enable=<<tv-enable-drag-and-drop>> class="tc-dropzone tc-page-container-inner">
+
+<$list filter="[all[shadows+tiddlers]tag[$:/tags/PageTemplate]!has[draft.of]!title[$:/core/ui/PageTemplate/story]]" variable="listItem">
+<$transclude tiddler=<<listItem>>/>
+</$list>
+
+<$scrollable class="tc-story-river" fallthrough="no">
+<section class="story-backdrop">
+<$list filter="[all[shadows+tiddlers]tag[$:/tags/AboveStory]!has[draft.of]]">
+<$transclude/>
+</$list>
+</section>
+<$list filter="[list[$:/StoryList]]" history="$:/HistoryList"
+	template="$:/core/ui/StoryTiddlerTemplate" storyview={{$:/view}}
+	emptyMessage={{$:/config/EmptyStoryMessage}}/>
+<section class="story-frontdrop">
+<$list filter="[all[shadows+tiddlers]tag[$:/tags/BelowStory]!has[draft.of]]">
+<$transclude/>
+</$list>
+</section>
+</$scrollable>
+
+</$dropzone>
+
+</$navigator>
+
+</div>
+
+</$vars>

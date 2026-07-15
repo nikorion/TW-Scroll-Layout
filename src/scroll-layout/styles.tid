@@ -1,0 +1,111 @@
+title: $:/plugins/nikorion/scroll-layout/styles
+tags: $:/tags/Stylesheet
+type: text/vnd.tiddlywiki
+
+\rules except dash
+
+<$reveal state="$:/layout" type="match" text="$:/plugins/nikorion/scroll-layout/layout" default="">
+@media (min-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+
+	{{$:/plugins/nikorion/scroll-layout/styles/base.css}}
+
+	:root {
+		--sl-scrollbar-width:             {{{ [[$:/config/nikorion/scroll-layout/scrollbar-width]get[text]else[10px]] }}};
+		--sl-scrollbar-width-mode:        {{{ [[$:/config/nikorion/scroll-layout/scrollbar-width-mode]get[text]else[thin]] }}};
+		--sl-scrollbar-radius:            {{{ [[$:/config/nikorion/scroll-layout/scrollbar-radius]get[text]else[8px]] }}};
+		--sl-scrollbar-thumb-color:       {{{ [[$:/config/nikorion/scroll-layout/scrollbar-thumb-color]get[text]else[var(--tpc-primary)]] }}};
+		--sl-scrollbar-thumb-hover-color: {{{ [[$:/config/nikorion/scroll-layout/scrollbar-thumb-hover-color]get[text]else[var(--tpc-primary)]] }}};
+		--sl-scrollbar-track-color:       {{{ [[$:/config/nikorion/scroll-layout/scrollbar-track-color]get[text]else[transparent]] }}};
+	}
+
+	/* Sticky tiddler title — gated on the vanilla stickytitles option so that disabling it
+	   in theme settings also disables it here (we would otherwise override vanilla's own gate). */
+	<$reveal state="$:/themes/tiddlywiki/vanilla/options/stickytitles" type="match" text="yes">
+	.tc-tiddler-title {
+		position: -webkit-sticky;
+		position: sticky;
+		top: 0;
+		z-index: 500;
+		background-color: var(--tpc-tiddler-background);
+	}
+	/* tc-tiddler-stuck: title has detached from its frame (frame scrolled above viewport).
+	   Negative margins extend the bar edge-to-edge; box-shadow signals the detach visually.
+	   sl-stuck-margin drives both the negative margin and the compensating padding. */
+	.tc-tiddler-title.tc-tiddler-stuck {
+		margin-left:   -42px;
+		margin-right:  -42px;
+		padding-left:  42px;
+		padding-right: 42px;
+		box-shadow:    0 2px 6px rgba(0,0,0,0.2);
+	}
+	</$reveal>
+
+
+	/* Sidebar layout: the plugin does NOT define its own river/sidebar geometry — widths and
+	   gaps come from the standard vanilla theme (Theme Tweaks metrics, transcluded directly
+	   because the core --tp-story-width/--tp-sidebar-width custom properties are not
+	   available on every supported TW version, plus vanilla's hard-coded 42px gutters /
+	   3em hidden-sidebar padding). The
+	   rules below only reposition the river's scrollbar so that the story content width
+	   never depends on the scrollbar the browser draws (thin/auto/none): the real scrollbar
+	   width is measured by startup.js into --sl-scrollbar-real-width (fallback 0px = pure
+	   vanilla geometry) and the neighbouring whitespace absorbs the variation. */
+
+	/* Fixed-fluid: vanilla gives the river left:storyleft, width:storywidth, 42px paddings.
+	   The right-hand padding is folded into the width so the scrollbar sits glued to the
+	   story content at the LEFT of the 42px gutter; the measured width is added back so the
+	   content keeps the exact vanilla width (storywidth - 84px). The sidebar's transparent
+	   overlap band (vanilla margin-left:-42px + padding-left:42px) is shrunk by the same
+	   amount so the fixed sidebar never covers the scrollbar — its content does not move.
+	   When the sidebar is hidden the scrollbar lives at the right edge of the viewport and
+	   the 42px padding is reduced by the measured width instead. */
+	<$reveal state="$:/themes/tiddlywiki/vanilla/options/sidebarlayout" type="match" text="fixed-fluid">
+
+	<$reveal state="$:/state/sidebar" type="match" text="yes" default="yes">
+	.tc-story-river {
+		padding-right: 0;
+		width: calc({{$:/themes/tiddlywiki/vanilla/metrics/storywidth}} - 42px + var(--sl-scrollbar-real-width, 0px));
+	}
+	.tc-sidebar-scrollable {
+		margin-left: calc(-42px + var(--sl-scrollbar-real-width, 0px));
+		padding-left: calc(42px - var(--sl-scrollbar-real-width, 0px));
+	}
+	</$reveal>
+
+	<$reveal state="$:/state/sidebar" type="nomatch" text="yes" default="yes">
+	.tc-story-river {
+		padding-right: calc(42px - var(--sl-scrollbar-real-width, 0px));
+	}
+	</$reveal>
+
+	</$reveal>
+
+
+	/* Fluid-fixed: vanilla gives the river width:auto, margin-right:sidebarwidth,
+	   padding-right:0 — the scrollbar is already glued to the content but eats into it.
+	   The margin is reduced by the measured width so the content edge stays put; the fixed
+	   sidebar is narrowed by the same amount (its 42px padding-left absorbs it, content does
+	   not move) so it never covers the scrollbar. When the sidebar is hidden, vanilla's 3em
+	   padding-right hosts the scrollbar: it is reduced by the measured width instead. */
+	<$reveal state="$:/themes/tiddlywiki/vanilla/options/sidebarlayout" type="match" text="fluid-fixed">
+
+	<$reveal state="$:/state/sidebar" type="match" text="yes" default="yes">
+	.tc-story-river {
+		margin-right: calc({{$:/themes/tiddlywiki/vanilla/metrics/sidebarwidth}} - var(--sl-scrollbar-real-width, 0px));
+	}
+	.tc-sidebar-scrollable {
+		width: calc({{$:/themes/tiddlywiki/vanilla/metrics/sidebarwidth}} - var(--sl-scrollbar-real-width, 0px));
+		padding-left: calc(42px - var(--sl-scrollbar-real-width, 0px));
+	}
+	</$reveal>
+
+	<$reveal state="$:/state/sidebar" type="nomatch" text="yes" default="yes">
+	.tc-story-river {
+		padding-right: calc(3em - var(--sl-scrollbar-real-width, 0px));
+	}
+	</$reveal>
+
+	</$reveal>
+
+}
+</$reveal>

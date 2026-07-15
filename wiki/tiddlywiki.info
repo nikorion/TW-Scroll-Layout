@@ -1,0 +1,24 @@
+{
+  "description": "TW-Scroll-Layout development wiki",
+  "plugins": [
+    "tiddlywiki/filesystem",
+    "tiddlywiki/tiddlyweb",
+    "tiddlywiki/highlight",
+    "nikorion/scroll-layout"
+  ],
+  "themes": [
+    "tiddlywiki/vanilla"
+  ],
+  "pluginPath": "../src",
+  "build": {
+    "plugin-json": [
+      "--output", "dist",
+      "--savetiddler", "$:/plugins/nikorion/scroll-layout", "TW-Scroll-Layout-Plugin.json", "application/json"
+    ],
+    "html": [
+      "--output", "docs",
+      "--rendertiddler", "$:/core/save/all", "TW-Scroll-Layout-Wiki.html", "text/plain", "",
+      "publishFilter", "-[[$:/dev/hmr]] -[[$:/config/dev/hmr-port]] -[[$:/config/SyncFilter]] -[[$:/plugins/wikilabs/link-to-tabs]] -[[$:/plugins/kookma/commander]] -[[$:/plugins/oeyoews/tiddlywiki-codemirror-6]]"
+    ]
+  }
+}

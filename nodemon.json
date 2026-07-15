@@ -1,0 +1,5 @@
+{
+  "watch": ["src/scroll-layout/modules", "src/scroll-layout/plugin.info"],
+  "ext": "js,info",
+  "exec": "tiddlywiki wiki --listen port=8080"
+}

@@ -1,0 +1,137 @@
+html, body.tc-body {
+	overflow: hidden;
+}
+
+/* Vanilla pushes tc-page-container-wrapper down by storytop to clear the fixed topbar.
+    In scroll-layout the river is positioned independently, so this offset creates a dead gap. */
+.tc-page-container-wrapper {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* TW wikitext parser wraps transclusions in <p> tags with browser-default margins (~18px).
+    Zero them out at the dropzone level so nothing pushes the page content down. */
+.tc-dropzone > p {
+    margin: 0;
+}
+
+/* Story river: full viewport-height scroll column.
+    Only padding-top is zeroed: position:sticky resolves "top:0" against the
+    scroll container's own padding edge, so the palette's top padding would push
+    the sticky threshold down and stop the title short of the true container top.
+    Bottom padding is zeroed for the same reason, mirrored: sticky "bottom:0"
+    elements inside the river (e.g. CodeMirror 6 .cm-panels-bottom) would otherwise
+    stick 42px above the river's visible bottom edge. Left/right padding are left
+    untouched so the current palette's margins still apply to the river content. */
+.tc-story-river {
+    height: calc(100vh - var(--tp-story-top));
+    overflow-x: hidden !important;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* The lost top padding is restored as margin-top on the river's first child
+    instead of the river's own padding: a child's margin scrolls away normally,
+    unlike a scroll container's own top padding (which stays pinned above the
+    content). So the gap shows at rest and disappears as soon as the title
+    scrolls up and sticks — exactly the behaviour padding-top:0 above was for. */
+.tc-story-river .story-backdrop {
+    margin-top: 42px;
+}
+
+/* Same restoration for the zeroed bottom padding: a child's margin provides the
+    resting gap without moving the sticky "bottom:0" threshold off the river's edge. */
+.tc-story-river .story-frontdrop {
+    margin-bottom: 42px;
+}
+
+/* startup.js scrolls the river with its own live-tracking scroller (used when opening a
+    tiddler from a link) and reads this scroll-margin-top to offset the landing position.
+    Without it the frame's top would align flush with the river's top, scrolling straight
+    past the margin above. scroll-margin-top doesn't add real box space, so it reproduces a
+    gap on navigation without touching layout or the sticky-threshold math above.
+    Deliberately smaller than the 42px resting margin-top above: the resting gap must stay
+    42px, but the post-click landing gap is set to 21px on request. */
+.tc-story-river .tc-tiddler-frame {
+    scroll-margin-top: 21px;
+}
+
+/* Sidebar flex chain — every level must be display:flex + flex-direction:column
+    so that height propagates all the way down to the scrolling tab content.
+    .tc-sidebar-scrollable is the chain root; no min-height:0 needed here. */
+.tc-sidebar-scrollable {
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chain nodes that grow and pass height to their children, without clipping */
+.tc-sidebar-scrollable > div,
+.tc-sidebar-scrollable .tc-sidebar-header > .tc-reveal:not([hidden]) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Chain nodes that grow, pass height, and clip overflow so nothing leaks */
+.tc-sidebar-scrollable .tc-sidebar-header,
+.tc-sidebar-scrollable .tc-sidebar-header > .tc-reveal > .tc-reveal:not([hidden]):has(.tc-sidebar-lists.tc-sidebar-tabs),
+.tc-sidebar-scrollable .tc-sidebar-header > .tc-reveal > .tc-reveal:has(.tc-sidebar-lists.tc-sidebar-tabs) > p,
+.tc-sidebar-lists.tc-sidebar-tabs,
+.tc-tab-set.tc-sidebar-tabs-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* TW5 parser emits a <p> around the tabs macrocall — display:contents makes it transparent */
+.tc-sidebar-lists.tc-sidebar-tabs > p {
+    display: contents;
+}
+
+/* Only the tab content panel itself scrolls */
+.tc-tab-content.tc-sidebar-tabs-main {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* Custom scrollbars for the two independent scroll zones (river + sidebar tab content).
+    Firefox (Gecko) uses scrollbar-width/scrollbar-color; the ::-webkit-scrollbar-* rules
+    below cover Blink and WebKit (Chrome/Edge/Opera and Safari — WebKit is Blink's ancestor,
+    both understand the same prefixed pseudo-elements). Both syntaxes are needed since there's
+    no single cross-engine standard. Gecko's scrollbar-width only accepts the thin/auto/none
+    keywords (no arbitrary length), so sl-scrollbar-width-mode is a separate keyword var —
+    sl-scrollbar-width (px) only reaches Blink/WebKit via ::-webkit-scrollbar below. Gecko also
+    has no way to round its native scrollbar, so sl-scrollbar-radius is likewise Blink/WebKit-only. */
+.tc-story-river,
+.tc-tab-content.tc-sidebar-tabs-main {
+    scrollbar-width: var(--sl-scrollbar-width-mode);
+    scrollbar-color: var(--sl-scrollbar-thumb-color) var(--sl-scrollbar-track-color);
+}
+
+.tc-story-river::-webkit-scrollbar,
+.tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar {
+    width: var(--sl-scrollbar-width);
+}
+.tc-story-river::-webkit-scrollbar-track,
+.tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar-track {
+    background: var(--sl-scrollbar-track-color);
+}
+/* Transparent border + background-clip:padding-box shrinks the visible thumb inside the
+    scrollbar-width track, giving a floating "pill" look instead of an edge-to-edge bar. */
+.tc-story-river::-webkit-scrollbar-thumb,
+.tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar-thumb {
+    background-color: var(--sl-scrollbar-thumb-color);
+    border-radius: var(--sl-scrollbar-radius);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+.tc-story-river::-webkit-scrollbar-thumb:hover,
+.tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar-thumb:hover {
+    background-color: var(--sl-scrollbar-thumb-hover-color);
+}
