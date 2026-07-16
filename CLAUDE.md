@@ -15,7 +15,7 @@ src/scroll-layout/              ← sources du plugin (seul dossier à toucher)
   stylesheet.tid                ← CSS : scroll indépendant story river + sidebar
   plugin.info                   ← métadonnées du plugin
 
-wiki/                           ← wiki TW de développement (ne pas versionner StoryList/HistoryList)
+wiki/                           ← wiki TW de développement
   tiddlywiki.info               ← config : plugins chargés, targets build plugin-json + html
   tiddlers/
     system/                     ← tiddlers de config UI + $__dev-hmr.tid + $__config_SyncFilter.tid
