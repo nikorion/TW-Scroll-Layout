@@ -28,6 +28,8 @@ Both are patched, but only for the story river instance (checked via &nbsp;`.tc-
 
 Scrollbar width/colours are configurable from the &nbsp;''Scroll Layout''&nbsp; tab in the control panel ([[settings.tid|$:/plugins/nikorion/scroll-layout/settings]]). The sidebar layout itself (story/sidebar widths and gaps) stays under the standard theme's control (Theme Tweaks): the plugin only repositions the river's scrollbar, glued to the story content, so that the content width never depends on the scrollbar width mode.
 
+Note for the ''fixed-fluid'' sidebar layout: the scrollbar follows the ''story width'' metric (Theme Tweaks) — ''tiddler width'' and ''story width'' are independent metrics in the standard theme, so adjust ''tiddler width'' to fit within ''story width'' (at most story width − 84px, the theme's two 42px gutters). Should ''tiddler width'' exceed that, the river widens to fit and the scrollbar follows ''tiddler width'' instead — nothing gets clipped, but the story column no longer matches ''story width''.
+
 ! Requirements
 
 TiddlyWiki >= 5.3.0.

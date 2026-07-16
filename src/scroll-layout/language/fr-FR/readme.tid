@@ -28,6 +28,8 @@ Les deux sont patchés, mais uniquement pour l'instance de la rivière de récit
 
 La largeur et les couleurs de la barre de défilement se configurent depuis l'onglet &nbsp;''Mise en page défilante''&nbsp; du panneau de configuration ([[settings.tid|$:/plugins/nikorion/scroll-layout/settings]]). La mise en page de la barre latérale elle-même (largeurs et espacements story/sidebar) reste sous le contrôle du thème standard (Theme Tweaks) : le plugin ne fait que repositionner la barre de défilement de la rivière, collée au contenu, pour que la largeur du contenu ne dépende jamais du mode de largeur de la barre.
 
+Note pour la disposition ''fixed-fluid'' : la barre de défilement suit la métrique ''story width'' (Theme Tweaks) — ''tiddler width'' et ''story width'' sont des métriques indépendantes dans le thème standard ; ajustez donc ''tiddler width'' pour qu'il tienne dans ''story width'' (au plus story width − 84px, les deux gouttières de 42px du thème). Si ''tiddler width'' dépasse, la rivière s'élargit pour l'accueillir et la barre suit alors ''tiddler width'' — rien n'est tronqué, mais la colonne de story ne correspond plus à ''story width''.
+
 ! Prérequis
 
 TiddlyWiki >= 5.3.0.

@@ -17,6 +17,8 @@ type: text/vnd.tiddlywiki
 
 <p><em><<scroll-layout-lingo Settings/Note/StoryWidth>></em></p>
 
+<p><em><<scroll-layout-lingo Settings/Note/FixedFluid>></em></p>
+
 <table class="tc-pref-table tc-table-no-border">
 <tbody>
 <tr>

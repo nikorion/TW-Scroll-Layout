@@ -12,17 +12,40 @@ exports.after = ["startup"];
 exports.synchronous = true;
 
 /*
- * Measure the real layout width of the river's scrollbar (offsetWidth minus clientWidth minus
- * borders) and publish it as --sl-scrollbar-real-width on the root element. The stylesheet
- * subtracts it from the configured right-hand gaps so the story content keeps the same width
- * whatever scrollbar the browser actually draws (thin/auto/none, per engine and platform);
- * overlay scrollbars measure 0 and leave the gaps untouched. Re-measured via the ResizeObserver
- * in prepareRiver, which fires when a width-mode config change reflows the river's content box.
+ * A detached, off-screen probe carrying the river's scrollbar styling (.sl-scrollbar-probe in
+ * base.css shares the same scrollbar-width / ::-webkit-scrollbar rules and inherits the config
+ * vars from :root), forced to overflow so a scrollbar always exists to measure. Created once and
+ * kept in the DOM; its offsetWidth/clientWidth track live config changes through the CSS vars.
  */
-function updateScrollbarWidthVar(scroller) {
-	var cs = getComputedStyle(scroller),
-		borders = (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0),
-		width = Math.max(0, scroller.offsetWidth - scroller.clientWidth - borders);
+var scrollbarProbe = null;
+function getScrollbarProbe() {
+	if(scrollbarProbe && scrollbarProbe.isConnected) {
+		return scrollbarProbe;
+	}
+	scrollbarProbe = document.createElement("div");
+	scrollbarProbe.className = "sl-scrollbar-probe";
+	scrollbarProbe.setAttribute("aria-hidden", "true");
+	document.body.appendChild(scrollbarProbe);
+	return scrollbarProbe;
+}
+
+/*
+ * Measure the browser's real scrollbar layout width and publish it as --sl-scrollbar-real-width
+ * on the root element. The stylesheet subtracts it from the configured right-hand gaps so the
+ * story content keeps the same width whatever scrollbar the browser actually draws (thin/auto/
+ * none, per engine and platform); overlay scrollbars measure 0 and leave the gaps untouched.
+ *
+ * The measurement is taken on the detached probe, NOT on the river: in fixed-fluid the river's
+ * own width is a calc() that depends on this very variable, so measuring the river couples the
+ * value to the element it controls. At a layout threshold (content ~1 viewport tall, thin/
+ * fractional scrollbar) that loop never settles — each ResizeObserver frame re-measures a
+ * slightly different width, re-widens the river and re-fires the observer, so the right edge and
+ * the scrollbar visibly shudder. The probe's width is fixed, so its measurement is a stable
+ * constant and setting the var to the same value stops the observer from re-firing.
+ */
+function updateScrollbarWidthVar() {
+	var probe = getScrollbarProbe(),
+		width = Math.max(0, probe.offsetWidth - probe.clientWidth);
 	document.documentElement.style.setProperty("--sl-scrollbar-real-width", width + "px");
 }
 
@@ -61,10 +84,27 @@ function updateOverscroll(scroller) {
 		}
 		return;
 	}
+	/*
+	 * The filler MUST be computed only from measurements that do not depend on its current
+	 * value, so that recomputing after our own minHeight write yields the exact same number
+	 * (idempotence). The previous formula derived it from scrollHeight — which includes the
+	 * filler itself — mixing integer-rounded scrollHeight/clientHeight with fractional rects;
+	 * near a rounding boundary successive corrections never converged: each write resized the
+	 * $scrollable inner div, re-fired the ResizeObserver in prepareRiver, recomputed a slightly
+	 * different filler, and the scrollbar thumb trembled in a perpetual rAF loop. Here the
+	 * inputs are the frontdrop's own top edge, the last frame's top edge and clientHeight —
+	 * none of which move when the filler below the frontdrop's top changes — so a second pass
+	 * reproduces the same value, skips the write, and the observer goes quiet.
+	 *
+	 * Geometry: the content must end exactly clientHeight below the target max-scroll offset
+	 * (last frame flush at the top minus its scroll-margin-top), so the desired frontdrop
+	 * height is clientHeight + neededMaxScroll − docTop(frontdrop) − its margin-bottom.
+	 */
 	var margin = parseFloat(getComputedStyle(lastFrame).scrollMarginTop) || 0,
+		frontdropMarginBottom = parseFloat(getComputedStyle(frontdrop).marginBottom) || 0,
 		neededMaxScroll = docTop(scroller, lastFrame) - margin,
-		currentMaxScroll = scroller.scrollHeight - scroller.clientHeight,
-		filler = Math.max(0, Math.round(current + neededMaxScroll - currentMaxScroll));
+		filler = Math.max(0, Math.round(
+			scroller.clientHeight + neededMaxScroll - docTop(scroller, frontdrop) - frontdropMarginBottom));
 	if(Math.abs(filler - current) > 1) {
 		frontdrop.style.minHeight = filler ? filler + "px" : "";
 	}
@@ -113,8 +153,15 @@ function scrollRiverToElement(scroller, element, callback, options) {
 	cancelRiverScroll(scroller);
 	var state = {cancelled: false, id: null};
 	scroller._slActiveScroll = state;
+	/*
+	 * Size the overscroll filler ONCE up front (and again when the settle phase begins, below),
+	 * not on every animation frame. Re-tuning it each frame made the scrollbar tremble for the
+	 * whole animation: mid-scroll scroller.scrollTop holds fractional values while docTop reads
+	 * rounded getBoundingClientRect()s, so the computed filler jittered by a pixel or two per
+	 * frame, moving scrollHeight - and with it the thumb's size and position - every frame.
+	 */
+	updateOverscroll(scroller);
 	var endPos = function() {
-		updateOverscroll(scroller);
 		if(isFirstStoryFrame(element)) {
 			return 0;
 		}
@@ -135,6 +182,9 @@ function scrollRiverToElement(scroller, element, callback, options) {
 			scroller.scrollTop = startPos + (endPos() - startPos) * $tw.utils.slowInSlowOut(t);
 			if(t >= 1) {
 				settleUntil = Date.now() + 400;
+				// Re-tune the filler once now that the main animation is done, to absorb any real
+				// layout growth from a concurrent insert/remove animation before snapping.
+				updateOverscroll(scroller);
 				if(callback) {
 					callback();
 				}
@@ -182,7 +232,7 @@ function prepareRiver(scroller) {
 		return;
 	}
 	preparedRivers.add(scroller);
-	updateScrollbarWidthVar(scroller);
+	updateScrollbarWidthVar();
 	$tw.utils.each(["wheel", "touchstart", "mousedown"], function(type) {
 		scroller.addEventListener(type, function() {
 			cancelRiverScroll(scroller);
@@ -197,7 +247,7 @@ function prepareRiver(scroller) {
 				requestAnimationFrame(function() {
 					pending = false;
 					if(scroller.isConnected) {
-						updateScrollbarWidthVar(scroller);
+						updateScrollbarWidthVar();
 						updateOverscroll(scroller);
 					} else {
 						observer.disconnect();

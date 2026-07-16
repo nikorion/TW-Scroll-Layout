@@ -6,6 +6,7 @@ Settings/Intro: Modified values create a config tiddler that overrides the defau
 Settings/Section/ScrollbarAppearance: Scrollbar appearance
 Settings/Note/GeckoOnly: Firefox (Gecko engine) only supports the "thin/auto/none" keyword and thumb/track colour on native scrollbars — width (px) and radius below only take effect in browsers built on Blink or WebKit (Chrome, Edge, Opera, Safari).
 Settings/Note/StoryWidth: The story content width does not depend on the width mode: the plugin keeps the standard theme layout (Theme Tweaks story/sidebar metrics and the theme's gutters) and only repositions the river's scrollbar — its real width is measured automatically, the scrollbar stays glued to the story content and the neighbouring whitespace absorbs the difference.
+Settings/Note/FixedFluid: In the "fixed-fluid" sidebar layout the scrollbar follows the "story width" metric (Theme Tweaks) — "tiddler width" and "story width" are independent metrics in the standard theme, so keep "tiddler width" within "story width" (at most story width − 84px, the theme's two 42px gutters). Should "tiddler width" exceed that, the river widens to fit and the scrollbar follows "tiddler width" instead — nothing gets clipped, but the story column no longer matches "story width".
 Settings/Label/WidthMode: Width mode (Gecko/Firefox)
 Settings/Label/Width: Width (Blink/WebKit only)
 Settings/Label/Radius: Thumb radius (Blink/WebKit only)

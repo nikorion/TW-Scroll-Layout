@@ -46,6 +46,18 @@ html, body.tc-body {
     margin-bottom: 42px;
 }
 
+/* Vanilla sizes .tc-tiddler-frame with the tiddlerwidth metric in every sidebar layout, while
+    the fixed-fluid river stays at storywidth regardless — when tiddlerwidth exceeds the river's
+    content width, vanilla lets the frames overflow visibly (the window scrolls, nothing clips).
+    Here the river is a scroll container with overflow-x:hidden, so that same excess would be
+    CLIPPED behind the river's scrollbar, hiding the right-hand part of every tiddler. Cap the
+    frames to the river's content width so an oversized tiddlerwidth degrades to "as wide as the
+    river allows" instead of hidden content. (In fixed-fluid the knob that actually widens the
+    story column — and moves the scrollbar with it — is storywidth, not tiddlerwidth.) */
+.tc-story-river .tc-tiddler-frame {
+    max-width: 100%;
+}
+
 /* startup.js scrolls the river with its own live-tracking scroller (used when opening a
     tiddler from a link) and reads this scroll-margin-top to offset the landing position.
     Without it the frame's top would align flush with the river's top, scrolling straight
@@ -108,14 +120,52 @@ html, body.tc-body {
     keywords (no arbitrary length), so sl-scrollbar-width-mode is a separate keyword var —
     sl-scrollbar-width (px) only reaches Blink/WebKit via ::-webkit-scrollbar below. Gecko also
     has no way to round its native scrollbar, so sl-scrollbar-radius is likewise Blink/WebKit-only. */
+/* Standard properties are gated to Gecko only: since Chrome 121 Blink implements
+    scrollbar-width/scrollbar-color too, and per spec their presence DISABLES all
+    ::-webkit-scrollbar-* custom styling — the px width, radius and pill thumb below would
+    silently stop applying there. Gecko is detected via a -moz- property probe; the seemingly
+    cleaner "@supports selector(::-webkit-scrollbar)" is useless because the CSS Compat spec
+    makes unknown ::-webkit-* pseudo-elements parse as valid in EVERY engine, Firefox included,
+    so that test is true everywhere. */
+@supports (-moz-appearance: none) {
+    .tc-story-river,
+    .tc-tab-content.tc-sidebar-tabs-main,
+    .sl-scrollbar-probe {
+        scrollbar-width: var(--sl-scrollbar-width-mode);
+        scrollbar-color: var(--sl-scrollbar-thumb-color) var(--sl-scrollbar-track-color);
+    }
+}
+
+/* Reserve the scrollbar gutter permanently so the content box width never changes when the
+   scrollbar appears or disappears. Without this, a tiddler sitting right on the overflow
+   threshold (content ~1 viewport tall) causes a runaway loop: the scrollbar shows -> content box
+   narrows -> text rewraps taller -> still overflows... then a frame later it fits -> scrollbar
+   hides -> content widens -> fits under the threshold -> scrollbar shows again, and the river and
+   its scrollbar shudder forever. The reserved gutter lines up exactly with the compensation added
+   to the river width via --sl-scrollbar-real-width, so the story content keeps its vanilla width. */
 .tc-story-river,
 .tc-tab-content.tc-sidebar-tabs-main {
-    scrollbar-width: var(--sl-scrollbar-width-mode);
-    scrollbar-color: var(--sl-scrollbar-thumb-color) var(--sl-scrollbar-track-color);
+    scrollbar-gutter: stable;
+}
+
+/* Off-screen probe used by startup.js to measure the real scrollbar width without coupling
+   the measurement to the river (whose width depends on the measured value). Fixed size + forced
+   overflow guarantee a stable, layout-independent reading. Shares the scrollbar rules above/below
+   and inherits the config vars from :root so it matches whatever the river actually draws. */
+.sl-scrollbar-probe {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    width: 100px;
+    height: 100px;
+    overflow-y: scroll;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .tc-story-river::-webkit-scrollbar,
-.tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar {
+.tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar,
+.sl-scrollbar-probe::-webkit-scrollbar {
     width: var(--sl-scrollbar-width);
 }
 .tc-story-river::-webkit-scrollbar-track,

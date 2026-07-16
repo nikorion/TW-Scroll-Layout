@@ -11,14 +11,20 @@ type: text/vnd.tiddlywiki
 
 	/* Defaults are shipped as shadow tiddlers (default-config.multids) at these
 	   same config titles: a real tiddler of the same title overrides the shadow,
-	   so plain transclusion below already resolves to the effective value. */
+	   so transclusion below already resolves to the effective value.
+	   $text (not {{...}}) because a plain transclusion wikifies the value with the
+	   TARGET tiddler's parse rules — our own "\rules except dash" does not carry
+	   over — so any value containing "--" (e.g. the shipped default
+	   var(--tpc-primary)) gets its dashes turned into an en-dash, producing an
+	   invalid var() name. In Gecko that poisons the single scrollbar-color
+	   property, silently reverting BOTH thumb and track to browser defaults. */
 	:root {
-		--sl-scrollbar-width:             {{$:/config/nikorion/scroll-layout/scrollbar-width}};
-		--sl-scrollbar-width-mode:        {{$:/config/nikorion/scroll-layout/scrollbar-width-mode}};
-		--sl-scrollbar-radius:            {{$:/config/nikorion/scroll-layout/scrollbar-radius}};
-		--sl-scrollbar-thumb-color:       {{$:/config/nikorion/scroll-layout/scrollbar-thumb-color}};
-		--sl-scrollbar-thumb-hover-color: {{$:/config/nikorion/scroll-layout/scrollbar-thumb-hover-color}};
-		--sl-scrollbar-track-color:       {{$:/config/nikorion/scroll-layout/scrollbar-track-color}};
+		--sl-scrollbar-width:             <$text text={{$:/config/nikorion/scroll-layout/scrollbar-width}}/>;
+		--sl-scrollbar-width-mode:        <$text text={{$:/config/nikorion/scroll-layout/scrollbar-width-mode}}/>;
+		--sl-scrollbar-radius:            <$text text={{$:/config/nikorion/scroll-layout/scrollbar-radius}}/>;
+		--sl-scrollbar-thumb-color:       <$text text={{$:/config/nikorion/scroll-layout/scrollbar-thumb-color}}/>;
+		--sl-scrollbar-thumb-hover-color: <$text text={{$:/config/nikorion/scroll-layout/scrollbar-thumb-hover-color}}/>;
+		--sl-scrollbar-track-color:       <$text text={{$:/config/nikorion/scroll-layout/scrollbar-track-color}}/>;
 	}
 
 	/* Sticky tiddler title — gated on the vanilla stickytitles option so that disabling it
@@ -65,9 +71,15 @@ type: text/vnd.tiddlywiki
 	<$reveal state="$:/themes/tiddlywiki/vanilla/options/sidebarlayout" type="match" text="fixed-fluid">
 
 	<$reveal state="$:/state/sidebar" type="match" text="yes" default="yes">
+	/* max(): vanilla's storywidth and tiddlerwidth metrics are NOT linked — vanilla lets
+	   frames wider than the river simply overflow visibly. Here the river is a clipping
+	   scroll container, so instead the river grows to fit an oversized tiddlerwidth
+	   (storywidth - 84px content when tiddlerwidth fits, tiddlerwidth otherwise, border-box:
+	   42px left padding + the reserved scrollbar gutter), keeping the scrollbar glued to the
+	   story column's real right edge in both cases. */
 	.tc-story-river {
 		padding-right: 0;
-		width: calc({{$:/themes/tiddlywiki/vanilla/metrics/storywidth}} - 42px + var(--sl-scrollbar-real-width, 0px));
+		width: calc(max({{$:/themes/tiddlywiki/vanilla/metrics/storywidth}} - 42px, {{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} + 42px) + var(--sl-scrollbar-real-width, 0px));
 	}
 	.tc-sidebar-scrollable {
 		margin-left: calc(-42px + var(--sl-scrollbar-real-width, 0px));
