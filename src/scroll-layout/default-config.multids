@@ -1,0 +1,8 @@
+title: $:/config/nikorion/scroll-layout/scrollbar-
+
+width-mode: thin
+width: 10px
+radius: 8px
+thumb-color: var(--tpc-primary)
+thumb-hover-color: var(--tpc-primary)
+track-color: transparent

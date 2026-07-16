@@ -1,0 +1,33 @@
+title: $:/plugins/nikorion/scroll-layout/language/fr-FR/readme
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+Remplace la mise en page par défaut par une où la rivière de récits, les onglets de la barre latérale et le contenu des onglets défilent chacun dans leur propre zone indépendante — au lieu que toute la page défile comme un seul bloc.
+
+Sélectionne-la depuis le sélecteur de mise en page (<<icon $:/core/images/layout-button>> à côté de la barre latérale) — c'est une entrée ''$:/tags/Layout'' alternative, qui cohabite donc avec la mise en page par défaut plutôt que de la remplacer d'office.
+
+! Ce que le plugin change
+
+<<<
+''Mise en page ([[layout.tid|$:/plugins/nikorion/scroll-layout/layout]])'' — la rivière de récits, normalement une simple &nbsp;`<section>`&nbsp; qui défile avec le reste de la page, est enrobée dans un widget &nbsp;`$scrollable`&nbsp; (`fallthrough="no"`). Elle devient ainsi son propre conteneur de défilement avec sa propre barre, dimensionné à &nbsp;`calc(100vh - storytop)`.
+
+''Barre latérale ([[base.css|$:/plugins/nikorion/scroll-layout/styles/base.css]])'' — la chaîne flex de la barre latérale (de &nbsp;`.tc-sidebar-scrollable`&nbsp; jusqu'à &nbsp;`.tc-tab-content`) est mise en &nbsp;`display:flex; flex-direction:column; min-height:0`&nbsp; à chaque niveau, pour que la hauteur se propage jusqu'en bas et que seul le panneau de contenu de l'onglet défile — la barre d'onglets elle-même reste fixe.
+
+''Navigation ([[startup.js|$:/plugins/nikorion/scroll-layout/startup.js]])'' — cliquer sur un lien vers un tiddler doit faire défiler la rivière jusqu'à ce tiddler, mais deux mécanismes du cœur de TiddlyWiki supposent que c'est la *fenêtre* qui défile, ce qui n'est plus vrai une fois que la rivière défile seule :
+
+* `$tw.pageScroller.scrollIntoView`&nbsp; (utilisé pour les événements &nbsp;`tm-scroll`&nbsp; qui atteignent directement &nbsp;`$tw.rootWidget`)
+* `ScrollableWidget.prototype.scrollIntoView`&nbsp; (celui réellement invoqué pour un clic sur un lien ordinaire, puisque le widget scrollable absorbe son propre événement &nbsp;`tm-scroll`&nbsp; et ne le laisse jamais remonter)
+
+Les deux sont patchés, mais uniquement pour l'instance de la rivière de récits (repérée via &nbsp;`.tc-story-river`) — le &nbsp;`$scrollable`&nbsp; propre à la barre latérale garde son comportement d'origine. La version patchée appelle le &nbsp;`element.scrollIntoView()`&nbsp; natif du navigateur au lieu du calcul de défilement en JS de TiddlyWiki, afin que &nbsp;`scroll-margin-top`&nbsp; (posé sur &nbsp;`.tc-tiddler-frame`) soit respecté et que le tiddler arrive avec le même espace en haut qu'au repos, plutôt que collé au bord du conteneur.
+
+''Titres collants'' — &nbsp;`.tc-tiddler-title`&nbsp; passe en &nbsp;`position:sticky`&nbsp; quand l'option vanilla &nbsp;''stickytitles''&nbsp; est activée. Un écouteur &nbsp;`scroll`&nbsp; en phase de capture sur la rivière (les événements de défilement ne remontent pas) bascule une classe &nbsp;`tc-tiddler-stuck`&nbsp; dès qu'un titre s'est détaché de son propre cadre — utilisée pour dessiner l'ombre portée / la barre bord à bord qui signale « ce titre est épinglé, pas à sa position naturelle ».
+<<<
+
+! Réglages
+
+La largeur et les couleurs de la barre de défilement se configurent depuis l'onglet &nbsp;''Mise en page défilante''&nbsp; du panneau de configuration ([[settings.tid|$:/plugins/nikorion/scroll-layout/settings]]). La mise en page de la barre latérale elle-même (largeurs et espacements story/sidebar) reste sous le contrôle du thème standard (Theme Tweaks) : le plugin ne fait que repositionner la barre de défilement de la rivière, collée au contenu, pour que la largeur du contenu ne dépende jamais du mode de largeur de la barre.
+
+! Prérequis
+
+TiddlyWiki >= 5.3.0.

@@ -1,0 +1,16 @@
+title: $:/plugins/nikorion/scroll-layout/language/fr-FR/
+
+Settings/Caption: Mise en page défilante
+Settings/Heading: Mise en page défilante — Réglages
+Settings/Intro: Modifier une valeur crée un tiddler de configuration qui surcharge le défaut. Le bouton ↺ supprime ce tiddler et restaure la valeur par défaut.
+Settings/Section/ScrollbarAppearance: Apparence de la barre de défilement
+Settings/Note/GeckoOnly: Firefox (moteur Gecko) ne prend en charge que le mot-clé "thin/auto/none" et la couleur du curseur/de la piste sur les barres de défilement natives — la largeur (px) et le rayon ci-dessous ne s'appliquent que dans les navigateurs basés sur Blink ou WebKit (Chrome, Edge, Opera, Safari).
+Settings/Note/StoryWidth: La largeur du contenu ne dépend pas du mode de largeur : le plugin conserve la mise en page du thème standard (métriques story/sidebar de Theme Tweaks et les marges du thème) et ne fait que repositionner la barre de défilement de la rivière — sa largeur réelle est mesurée automatiquement, la barre reste collée au contenu et l'espace voisin absorbe la différence.
+Settings/Label/WidthMode: Mode de largeur (Gecko/Firefox)
+Settings/Label/Width: Largeur (Blink/WebKit uniquement)
+Settings/Label/Radius: Rayon du curseur (Blink/WebKit uniquement)
+Settings/Label/ThumbColor: Couleur du curseur
+Settings/Label/ThumbHoverColor: Couleur du curseur au survol (Blink/WebKit uniquement)
+Settings/Label/TrackColor: Couleur de la piste
+Settings/ResetTooltip: Restaurer la valeur par défaut
+Settings/DefaultLabel: défaut :

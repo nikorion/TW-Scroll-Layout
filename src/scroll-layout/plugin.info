@@ -5,7 +5,8 @@
 	"author": "nikorion",
 	"version": "1.0.0",
 	"core-version": ">=5.3.0",
-	"list": "readme",
+	"list": "readme history",
 	"source": "https://github.com/nikorion/TW-Scroll-Layout",
+	"type": "application/json",
 	"plugin-type": "plugin"
 }

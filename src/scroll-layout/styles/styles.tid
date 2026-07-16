@@ -9,13 +9,16 @@ type: text/vnd.tiddlywiki
 
 	{{$:/plugins/nikorion/scroll-layout/styles/base.css}}
 
+	/* Defaults are shipped as shadow tiddlers (default-config.multids) at these
+	   same config titles: a real tiddler of the same title overrides the shadow,
+	   so plain transclusion below already resolves to the effective value. */
 	:root {
-		--sl-scrollbar-width:             {{{ [[$:/config/nikorion/scroll-layout/scrollbar-width]get[text]else[10px]] }}};
-		--sl-scrollbar-width-mode:        {{{ [[$:/config/nikorion/scroll-layout/scrollbar-width-mode]get[text]else[thin]] }}};
-		--sl-scrollbar-radius:            {{{ [[$:/config/nikorion/scroll-layout/scrollbar-radius]get[text]else[8px]] }}};
-		--sl-scrollbar-thumb-color:       {{{ [[$:/config/nikorion/scroll-layout/scrollbar-thumb-color]get[text]else[var(--tpc-primary)]] }}};
-		--sl-scrollbar-thumb-hover-color: {{{ [[$:/config/nikorion/scroll-layout/scrollbar-thumb-hover-color]get[text]else[var(--tpc-primary)]] }}};
-		--sl-scrollbar-track-color:       {{{ [[$:/config/nikorion/scroll-layout/scrollbar-track-color]get[text]else[transparent]] }}};
+		--sl-scrollbar-width:             {{$:/config/nikorion/scroll-layout/scrollbar-width}};
+		--sl-scrollbar-width-mode:        {{$:/config/nikorion/scroll-layout/scrollbar-width-mode}};
+		--sl-scrollbar-radius:            {{$:/config/nikorion/scroll-layout/scrollbar-radius}};
+		--sl-scrollbar-thumb-color:       {{$:/config/nikorion/scroll-layout/scrollbar-thumb-color}};
+		--sl-scrollbar-thumb-hover-color: {{$:/config/nikorion/scroll-layout/scrollbar-thumb-hover-color}};
+		--sl-scrollbar-track-color:       {{$:/config/nikorion/scroll-layout/scrollbar-track-color}};
 	}
 
 	/* Sticky tiddler title — gated on the vanilla stickytitles option so that disabling it

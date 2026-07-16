@@ -1,0 +1,33 @@
+title: $:/plugins/nikorion/scroll-layout/language/en-GB/readme
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+Replaces the default page layout with one where the story river, the sidebar tabs, and the tab content each scroll in their own independent region — instead of the whole page scrolling as one block.
+
+Select it from the layout switcher (<<icon $:/core/images/layout-button>> next to the sidebar) — it's an alternative ''$:/tags/Layout'' entry, so it lives alongside the default layout rather than replacing it outright.
+
+! What it changes
+
+<<<
+''Layout ([[layout.tid|$:/plugins/nikorion/scroll-layout/layout]])'' — the story river, normally a plain &nbsp;`<section>`&nbsp; that scrolls with the rest of the page, is wrapped in a &nbsp;`$scrollable`&nbsp; widget (`fallthrough="no"`) instead. That turns it into its own scroll container with its own scrollbar, sized to &nbsp;`calc(100vh - storytop)`.
+
+''Sidebar ([[base.css|$:/plugins/nikorion/scroll-layout/styles/base.css]])'' — the sidebar's flex chain (`.tc-sidebar-scrollable`&nbsp; down to &nbsp;`.tc-tab-content`) is set to &nbsp;`display:flex; flex-direction:column; min-height:0`&nbsp; at every level, so height propagates all the way down and only the tab *content* panel scrolls — the tab bar itself stays put.
+
+''Navigation ([[startup.js|$:/plugins/nikorion/scroll-layout/startup.js]])'' — clicking a link to a tiddler needs to scroll the river to that tiddler, but two core mechanisms assume the *window* scrolls, which no longer holds once the river scrolls on its own:
+
+* `$tw.pageScroller.scrollIntoView`&nbsp; (used for &nbsp;`tm-scroll`&nbsp; events that reach &nbsp;`$tw.rootWidget`&nbsp; directly)
+* `ScrollableWidget.prototype.scrollIntoView`&nbsp; (the one actually invoked for ordinary link clicks, since the scrollable widget absorbs its own &nbsp;`tm-scroll`&nbsp; event and never lets it bubble up)
+
+Both are patched, but only for the story river instance (checked via &nbsp;`.tc-story-river`) — the sidebar's own &nbsp;`$scrollable`&nbsp; keeps its original behaviour. The patched version calls the browser's native &nbsp;`element.scrollIntoView()`&nbsp; instead of TW's JS-driven scroll math, so that &nbsp;`scroll-margin-top`&nbsp; (set on &nbsp;`.tc-tiddler-frame`) is honoured and the tiddler lands with the same top gap as at rest, rather than flush against the container edge.
+
+''Sticky titles'' — &nbsp;`.tc-tiddler-title`&nbsp; is &nbsp;`position:sticky`&nbsp; when the vanilla &nbsp;''stickytitles''&nbsp; option is on. A capture-phase &nbsp;`scroll`&nbsp; listener on the river (scroll events don't bubble) toggles a &nbsp;`tc-tiddler-stuck`&nbsp; class once a title has detached from its own frame — used to draw the drop-shadow / edge-to-edge bar that signals "this title is pinned, not at its natural position".
+<<<
+
+! Settings
+
+Scrollbar width/colours are configurable from the &nbsp;''Scroll Layout''&nbsp; tab in the control panel ([[settings.tid|$:/plugins/nikorion/scroll-layout/settings]]). The sidebar layout itself (story/sidebar widths and gaps) stays under the standard theme's control (Theme Tweaks): the plugin only repositions the river's scrollbar, glued to the story content, so that the content width never depends on the scrollbar width mode.
+
+! Requirements
+
+TiddlyWiki >= 5.3.0.
