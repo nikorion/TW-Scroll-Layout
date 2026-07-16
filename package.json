@@ -15,6 +15,6 @@
     "eslint": "^9.0.0",
     "globals": "^16.0.0",
     "nodemon": "^3.0.0",
-    "tiddlywiki": "^5.3.6"
+    "tiddlywiki": "^5.4.1"
   }
 }
