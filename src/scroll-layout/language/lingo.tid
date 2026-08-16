@@ -36,5 +36,5 @@ So the cascade stays inline, duplicated across the two definitions below.
 \end
 
 \function scroll-layout-lingo-text(title)
-[[$:/language]get[text]get[name]else[en-GB]addprefix[$:/plugins/nikorion/scroll-layout/language/]addsuffix[/]addsuffix<title>get[text]] :else[[$:/plugins/nikorion/scroll-layout/language/en-GB/]addsuffix<title>get[text]] :else<title>
+[[$:/language]get[text]get[name]else[en-GB]addprefix[$:/plugins/nikorion/scroll-layout/language/]addsuffix[/]addsuffix<title>get[text]] :else[[$:/plugins/nikorion/scroll-layout/language/en-GB/]addsuffix<title>get[text]] :else[<title>]
 \end

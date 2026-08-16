@@ -10,9 +10,14 @@ Plugin TiddlyWiki (`$:/plugins/nikorion/scroll-layout`) qui remplace le layout p
 src/scroll-layout/              ← sources du plugin (seul dossier à toucher)
   modules/
     startup.js                  ← patch de $tw.pageScroller + gestion tc-tiddler-stuck
-  layout.tid                    ← layout TW (tag $:/tags/Layout)
-  story.tid                     ← override de $:/core/ui/PageTemplate/story
-  stylesheet.tid                ← CSS : scroll indépendant story river + sidebar
+  layout.tid                    ← layout TW (tag $:/tags/Layout) : story river $scrollable inline (backdrop/frontdrop)
+  styles/
+    styles.tid                  ← feuille de style (tag $:/tags/Stylesheet, titre .../styles/styles) : conditions <$reveal> + vars de config ; transclut base.css
+    base.css                    ← CSS statique : scroll river + chaîne flex sidebar + scrollbars
+  default-config.multids        ← défauts de config (scrollbar-*, en shadow override)
+  settings.tid                  ← onglet ControlPanel (titre .../settings)
+  readme.tid / history.tid / licence.tid
+  language/                     ← i18n : lingo.tid + en-GB/fr-FR (readme + settings)
   plugin.info                   ← métadonnées du plugin
 
 wiki/                           ← wiki TW de développement
@@ -26,7 +31,7 @@ docs/                           ← TW-Scroll-Layout-Wiki.html standalone (distr
 
 ## Spécificités dev
 - `pnpm build` → `dist/TW-Scroll-Layout-Plugin.json` + `docs/TW-Scroll-Layout-Wiki.html`. Build HTML `publishFilter` (`../guides/build-html-publishfilter.md`) : `highlight` gardé (officiel TW).
-- HMR : les `.tid` (`layout`, `story`, `stylesheet`) sont poussés à chaud ; un changement de `startup.js` reboote. `nodemon.json` surveille `src/scroll-layout/modules` + `plugin.info`. `eslint.config.js` : ES2021. Plugins actifs du wiki : scroll-layout, filesystem, tiddlyweb.
+- HMR : les `.tid`/`.css`/`.multids` (`layout`, `styles/styles`, `styles/base.css`…) sont poussés à chaud ; un changement de `startup.js` reboote. `nodemon.json` surveille `src/scroll-layout/modules` + `plugin.info`. `eslint.config.js` : ES2021. Plugins actifs du wiki : scroll-layout, filesystem, tiddlyweb.
 
 ## Architecture du plugin
 
@@ -39,15 +44,11 @@ Le storyview classique appelle `$tw.pageScroller.scrollIntoView()` qui scrolle l
 **2. Gestion de `tc-tiddler-stuck`**
 Écoute les événements `scroll` en capture sur `.tc-story-river`. Ajoute `tc-tiddler-stuck` sur les `.tc-tiddler-title` dont le sticky a décroché de son frame (frame scrollé au-dessus du conteneur). Nécessite la phase de capture car les événements scroll ne remontent pas.
 
-### story.tid
-Override de `$:/core/ui/PageTemplate/story`. Conditionnel sur `$:/layout` :
-- Si scroll-layout actif → `$scrollable` avec `fallthrough="no"`
-- Sinon → comportement core exact (section statique)
+### layout.tid
+Layout TW (`tag $:/tags/Layout`), sélectionné via `$:/layout` — plus d'override de `$:/core/ui/PageTemplate/story`. Le story river y est **inline** : `<$scrollable class="tc-story-river" fallthrough="no">` encadrant `story-backdrop` (première section) et `story-frontdrop` (dernière), sur lesquelles le CSS restaure les marges de padding perdues.
 
-### stylesheet.tid
-Conditionnel sur `$:/layout`. Gère :
-- `overflow:hidden` sur html/body
-- Story river : hauteur `calc(100vh - storytop)`, scroll indépendant
-- Sidebar : chaîne flex complète jusqu'au `.tc-tab-content` qui scrolle seul
-- Titres sticky + état `tc-tiddler-stuck` (ombre + marges négatives)
-- Fixed-fluid et fluid-fixed : ajustements de largeur/marges
+### styles/ — deux fichiers, découpage volontaire
+- **styles.tid** — la //vraie// feuille de style (`tag $:/tags/Stylesheet`, `type text/vnd.tiddlywiki`), seule appliquée par TW. Porte le wikitext : `<$reveal>` gaté sur `$:/layout`, vars `--sl-scrollbar-*` transcluses depuis `$:/config/nikorion/scroll-layout/...`, branches fixed-fluid/fluid-fixed et sticky titles. Transclut `base.css` (`{{.../styles/base.css}}`).
+- **base.css** — CSS pur, statique, **non taggé Stylesheet** (jamais appliqué seul, uniquement injecté par la transclusion ci-dessus) : `overflow:hidden` html/body, hauteur du river `calc(100vh - storytop)`, chaîne flex sidebar jusqu'au `.tc-tab-content`, scrollbars Gecko/Webkit, `tc-tiddler-stuck`.
+
+Titres : les deux suivent titre=chemin (`.../scroll-layout/styles/styles` et `.../scroll-layout/styles/base.css`), conformément à la convention du workspace. Rien de dérogatoire ici.

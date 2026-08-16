@@ -1,4 +1,9 @@
 title: $:/plugins/nikorion/scroll-layout/history
 type: text/vnd.tiddlywiki
 
-* ''1.0.0'' -- 2026.07.16 -- Hello !
+\whitespace trim
+<$let _lang={{{ [[$:/language]get[text]get[name]else[en-GB]] }}}>
+<$transclude $mode="block" $tiddler={{{ [[$:/plugins/nikorion/scroll-layout/language/]addsuffix<_lang>addsuffix[/history]] }}}>
+<$transclude $mode="block" $tiddler="$:/plugins/nikorion/scroll-layout/language/en-GB/history"/>
+</$transclude>
+</$let>

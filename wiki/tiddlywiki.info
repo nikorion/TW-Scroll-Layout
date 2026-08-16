@@ -10,15 +10,18 @@
     "tiddlywiki/vanilla"
   ],
   "pluginPath": "../src",
+  "config": {
+    "retain-original-tiddler-path": true
+  },
   "build": {
     "plugin-json": [
       "--output", "dist",
-      "--savetiddler", "$:/plugins/nikorion/scroll-layout", "TW-Scroll-Layout-Plugin.json", "application/json"
+      "--render", "$:/core/templates/exporters/JsonFile", "TW-Scroll-Layout-Plugin.json", "text/plain", "", "exportFilter", "[[$:/plugins/nikorion/scroll-layout]]"
     ],
     "html": [
       "--output", "docs",
       "--rendertiddler", "$:/core/save/all", "TW-Scroll-Layout-Wiki.html", "text/plain", "",
-      "publishFilter", "-[[$:/dev/hmr]] -[[$:/config/dev/hmr-port]] -[[$:/config/SyncFilter]] -[[$:/plugins/wikilabs/link-to-tabs]] -[[$:/plugins/kookma/commander]] -[[$:/plugins/oeyoews/tiddlywiki-codemirror-6]]"
+      "publishFilter", "-[[$:/dev/hmr]] -[[$:/config/dev/hmr-port]] -[[$:/config/SyncFilter]] -[[$:/config/FileSystemPaths]] -[[$:/config/OriginalTiddlerPaths]] -[[$:/plugins/wikilabs/link-to-tabs]] -[[$:/plugins/kookma/commander]] -[[$:/plugins/oeyoews/tiddlywiki-codemirror-6]]"
     ]
   }
 }
