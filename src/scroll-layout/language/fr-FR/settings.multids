@@ -1,7 +1,7 @@
 title: $:/plugins/nikorion/scroll-layout/language/fr-FR/
 
-Settings/Caption: Mise en page défilante
-Settings/Heading: Mise en page défilante — Réglages
+Settings/Caption: Scroll Layout
+Settings/Heading: Scroll Layout — Réglages
 Settings/Intro: Modifier une valeur crée un tiddler de configuration qui surcharge le défaut. Le bouton ↺ supprime ce tiddler et restaure la valeur par défaut.
 Settings/Section/ScrollbarAppearance: Apparence de la barre de défilement
 Settings/Note/GeckoOnly: Firefox (moteur Gecko) ne prend en charge que le mot-clé "thin/auto/none" et la couleur du curseur/de la piste sur les barres de défilement natives — la largeur (px) et le rayon ci-dessous ne s'appliquent que dans les navigateurs basés sur Blink ou WebKit (Chrome, Edge, Opera, Safari).
