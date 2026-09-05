@@ -3,7 +3,7 @@
 	"name": "Scroll Layout",
 	"description": "Isolated scroll areas — story river, sidebar tabs, and tab content each scroll independently",
 	"author": "nikorion",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"core-version": ">=5.3.0",
 	"list": "readme license history",
 	"source": "https://github.com/nikorion/TW-Scroll-Layout",

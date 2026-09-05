@@ -1,5 +1,6 @@
 title: $:/plugins/nikorion/scroll-layout/language/fr-FR/history
 type: text/vnd.tiddlywiki
 
+* ''1.2.0'' -- 2026.08.18 -- //fluid-fixed// : rétablissement d'une gouttière libre entre la rivière et la barre latérale, identique aux 42px situés à gauche du contenu — vanilla n'en laisse aucune. C'est la rivière qui l'absorbe (c'est l'élément fluide), la barre latérale conserve sa géométrie vanilla exacte. La barre de défilement de la rivière est dessinée dans cette gouttière, à son extrémité gauche, collée au contenu.
 * ''1.1.0'' -- 2026.08.17 -- Localisation de la licence et de l'historique des versions : `licence.tid` et `history.tid` sont désormais des sélecteurs de langue qui transcluent en mode bloc `language/<lang>/licence` et `language/<lang>/history`, avec repli sur en-GB — même montage que `readme.tid`. Le corps de la licence reste en anglais dans toutes les langues : seul le texte d'origine d'une licence fait foi, seul son encadrement est traduit (introduction, titres, prose des //Composants tiers//).
 * ''1.0.0'' -- 2026.07.16 -- Bonjour !

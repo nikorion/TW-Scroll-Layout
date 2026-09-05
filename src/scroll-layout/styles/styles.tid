@@ -97,20 +97,23 @@ type: text/vnd.tiddlywiki
 
 
 	/* Fluid-fixed: vanilla gives the river width:auto, margin-right:sidebarwidth,
-	   padding-right:0 — the scrollbar is already glued to the content but eats into it.
-	   The margin is reduced by the measured width so the content edge stays put; the fixed
-	   sidebar is narrowed by the same amount (its 42px padding-left absorbs it, content does
-	   not move) so it never covers the scrollbar. When the sidebar is hidden, vanilla's 3em
-	   padding-right hosts the scrollbar: it is reduced by the measured width instead. */
+	   padding-right:0 — so the story content butts straight against the sidebar, with no free
+	   space mirroring the 42px gutter on the left. The margin is widened by 42px to restore that
+	   symmetry: the river is the fluid element here, so the gutter is taken from the river and
+	   the fixed sidebar keeps its exact vanilla geometry (no narrowing, nothing to shift).
+	   padding-right stays 0 so the scrollbar remains glued to the story content: a scroll
+	   container draws its scrollbar OUTSIDE its own padding, against the border edge, so any
+	   padding-right would push the bar away from the content and over to the sidebar side.
+	   The measured scrollbar width is then subtracted from the margin so the bar is drawn INSIDE
+	   the 42px gutter: the total river-to-sidebar distance stays exactly 42px, matching the left
+	   gutter, with the scrollbar at its left end — next to the content it actually scrolls, and
+	   not to be mistaken for the sidebar's own scrollbar. When the sidebar is hidden, vanilla's
+	   3em padding-right hosts the scrollbar: it is reduced by the measured width instead. */
 	<$reveal state="$:/themes/tiddlywiki/vanilla/options/sidebarlayout" type="match" text="fluid-fixed">
 
 	<$reveal state="$:/state/sidebar" type="match" text="yes" default="yes">
 	.tc-story-river {
-		margin-right: calc({{$:/themes/tiddlywiki/vanilla/metrics/sidebarwidth}} - var(--sl-scrollbar-real-width, 0px));
-	}
-	.tc-sidebar-scrollable {
-		width: calc({{$:/themes/tiddlywiki/vanilla/metrics/sidebarwidth}} - var(--sl-scrollbar-real-width, 0px));
-		padding-left: calc(42px - var(--sl-scrollbar-real-width, 0px));
+		margin-right: calc({{$:/themes/tiddlywiki/vanilla/metrics/sidebarwidth}} + 42px - var(--sl-scrollbar-real-width, 0px));
 	}
 	</$reveal>
 
