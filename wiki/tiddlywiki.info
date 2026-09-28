@@ -4,10 +4,14 @@
     "tiddlywiki/filesystem",
     "tiddlywiki/tiddlyweb",
     "tiddlywiki/highlight",
-    "nikorion/scroll-layout"
+    "nikorion/scroll-layout",
+    "nikorion/detect-language"
   ],
   "themes": [
     "tiddlywiki/vanilla"
+  ],
+  "languages": [
+    "fr-FR"
   ],
   "pluginPath": "../src",
   "config": {
