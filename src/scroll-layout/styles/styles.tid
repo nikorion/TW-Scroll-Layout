@@ -19,12 +19,12 @@ type: text/vnd.tiddlywiki
 	   invalid var() name. In Gecko that poisons the single scrollbar-color
 	   property, silently reverting BOTH thumb and track to browser defaults. */
 	:root {
-		--sl-scrollbar-width:             <$text text={{$:/config/nikorion/scroll-layout/scrollbar-width}}/>;
-		--sl-scrollbar-width-mode:        <$text text={{$:/config/nikorion/scroll-layout/scrollbar-width-mode}}/>;
-		--sl-scrollbar-radius:            <$text text={{$:/config/nikorion/scroll-layout/scrollbar-radius}}/>;
-		--sl-scrollbar-thumb-color:       <$text text={{$:/config/nikorion/scroll-layout/scrollbar-thumb-color}}/>;
-		--sl-scrollbar-thumb-hover-color: <$text text={{$:/config/nikorion/scroll-layout/scrollbar-thumb-hover-color}}/>;
-		--sl-scrollbar-track-color:       <$text text={{$:/config/nikorion/scroll-layout/scrollbar-track-color}}/>;
+		--nk-scrollbar-width:             <$text text={{$:/config/nikorion/scroll-layout/scrollbar-width}}/>;
+		--nk-scrollbar-width-mode:        <$text text={{$:/config/nikorion/scroll-layout/scrollbar-width-mode}}/>;
+		--nk-scrollbar-radius:            <$text text={{$:/config/nikorion/scroll-layout/scrollbar-radius}}/>;
+		--nk-scrollbar-thumb-color:       <$text text={{$:/config/nikorion/scroll-layout/scrollbar-thumb-color}}/>;
+		--nk-scrollbar-thumb-hover-color: <$text text={{$:/config/nikorion/scroll-layout/scrollbar-thumb-hover-color}}/>;
+		--nk-scrollbar-track-color:       <$text text={{$:/config/nikorion/scroll-layout/scrollbar-track-color}}/>;
 	}
 
 	/* Sticky tiddler title — gated on the vanilla stickytitles option so that disabling it
@@ -39,7 +39,7 @@ type: text/vnd.tiddlywiki
 	}
 	/* tc-tiddler-stuck: title has detached from its frame (frame scrolled above viewport).
 	   Negative margins extend the bar edge-to-edge; box-shadow signals the detach visually.
-	   sl-stuck-margin drives both the negative margin and the compensating padding. */
+	   nk-stuck-margin drives both the negative margin and the compensating padding. */
 	.tc-tiddler-title.tc-tiddler-stuck {
 		margin-left:   -42px;
 		margin-right:  -42px;
@@ -57,7 +57,7 @@ type: text/vnd.tiddlywiki
 	   3em hidden-sidebar padding). The
 	   rules below only reposition the river's scrollbar so that the story content width
 	   never depends on the scrollbar the browser draws (thin/auto/none): the real scrollbar
-	   width is measured by startup.js into --sl-scrollbar-real-width (fallback 0px = pure
+	   width is measured by startup.js into --nk-scrollbar-real-width (fallback 0px = pure
 	   vanilla geometry) and the neighbouring whitespace absorbs the variation. */
 
 	/* Fixed-fluid: vanilla gives the river left:storyleft, width:storywidth, 42px paddings.
@@ -79,17 +79,17 @@ type: text/vnd.tiddlywiki
 	   story column's real right edge in both cases. */
 	.tc-story-river {
 		padding-right: 0;
-		width: calc(max({{$:/themes/tiddlywiki/vanilla/metrics/storywidth}} - 42px, {{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} + 42px) + var(--sl-scrollbar-real-width, 0px));
+		width: calc(max({{$:/themes/tiddlywiki/vanilla/metrics/storywidth}} - 42px, {{$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth}} + 42px) + var(--nk-scrollbar-real-width, 0px));
 	}
 	.tc-sidebar-scrollable {
-		margin-left: calc(-42px + var(--sl-scrollbar-real-width, 0px));
-		padding-left: calc(42px - var(--sl-scrollbar-real-width, 0px));
+		margin-left: calc(-42px + var(--nk-scrollbar-real-width, 0px));
+		padding-left: calc(42px - var(--nk-scrollbar-real-width, 0px));
 	}
 	</$reveal>
 
 	<$reveal state="$:/state/sidebar" type="nomatch" text="yes" default="yes">
 	.tc-story-river {
-		padding-right: calc(42px - var(--sl-scrollbar-real-width, 0px));
+		padding-right: calc(42px - var(--nk-scrollbar-real-width, 0px));
 	}
 	</$reveal>
 
@@ -113,13 +113,13 @@ type: text/vnd.tiddlywiki
 
 	<$reveal state="$:/state/sidebar" type="match" text="yes" default="yes">
 	.tc-story-river {
-		margin-right: calc({{$:/themes/tiddlywiki/vanilla/metrics/sidebarwidth}} + 42px - var(--sl-scrollbar-real-width, 0px));
+		margin-right: calc({{$:/themes/tiddlywiki/vanilla/metrics/sidebarwidth}} + 42px - var(--nk-scrollbar-real-width, 0px));
 	}
 	</$reveal>
 
 	<$reveal state="$:/state/sidebar" type="nomatch" text="yes" default="yes">
 	.tc-story-river {
-		padding-right: calc(3em - var(--sl-scrollbar-real-width, 0px));
+		padding-right: calc(3em - var(--nk-scrollbar-real-width, 0px));
 	}
 	</$reveal>
 

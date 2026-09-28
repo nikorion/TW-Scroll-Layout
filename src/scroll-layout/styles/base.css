@@ -117,9 +117,9 @@ html, body.tc-body {
     below cover Blink and WebKit (Chrome/Edge/Opera and Safari — WebKit is Blink's ancestor,
     both understand the same prefixed pseudo-elements). Both syntaxes are needed since there's
     no single cross-engine standard. Gecko's scrollbar-width only accepts the thin/auto/none
-    keywords (no arbitrary length), so sl-scrollbar-width-mode is a separate keyword var —
-    sl-scrollbar-width (px) only reaches Blink/WebKit via ::-webkit-scrollbar below. Gecko also
-    has no way to round its native scrollbar, so sl-scrollbar-radius is likewise Blink/WebKit-only. */
+    keywords (no arbitrary length), so nk-scrollbar-width-mode is a separate keyword var —
+    nk-scrollbar-width (px) only reaches Blink/WebKit via ::-webkit-scrollbar below. Gecko also
+    has no way to round its native scrollbar, so nk-scrollbar-radius is likewise Blink/WebKit-only. */
 /* Standard properties are gated to Gecko only: since Chrome 121 Blink implements
     scrollbar-width/scrollbar-color too, and per spec their presence DISABLES all
     ::-webkit-scrollbar-* custom styling — the px width, radius and pill thumb below would
@@ -130,9 +130,9 @@ html, body.tc-body {
 @supports (-moz-appearance: none) {
     .tc-story-river,
     .tc-tab-content.tc-sidebar-tabs-main,
-    .sl-scrollbar-probe {
-        scrollbar-width: var(--sl-scrollbar-width-mode);
-        scrollbar-color: var(--sl-scrollbar-thumb-color) var(--sl-scrollbar-track-color);
+    .nk-scrollbar-probe {
+        scrollbar-width: var(--nk-scrollbar-width-mode);
+        scrollbar-color: var(--nk-scrollbar-thumb-color) var(--nk-scrollbar-track-color);
     }
 }
 
@@ -142,7 +142,7 @@ html, body.tc-body {
    narrows -> text rewraps taller -> still overflows... then a frame later it fits -> scrollbar
    hides -> content widens -> fits under the threshold -> scrollbar shows again, and the river and
    its scrollbar shudder forever. The reserved gutter lines up exactly with the compensation added
-   to the river width via --sl-scrollbar-real-width, so the story content keeps its vanilla width. */
+   to the river width via --nk-scrollbar-real-width, so the story content keeps its vanilla width. */
 .tc-story-river,
 .tc-tab-content.tc-sidebar-tabs-main {
     scrollbar-gutter: stable;
@@ -152,7 +152,7 @@ html, body.tc-body {
    the measurement to the river (whose width depends on the measured value). Fixed size + forced
    overflow guarantee a stable, layout-independent reading. Shares the scrollbar rules above/below
    and inherits the config vars from :root so it matches whatever the river actually draws. */
-.sl-scrollbar-probe {
+.nk-scrollbar-probe {
     position: absolute;
     top: -9999px;
     left: -9999px;
@@ -165,23 +165,23 @@ html, body.tc-body {
 
 .tc-story-river::-webkit-scrollbar,
 .tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar,
-.sl-scrollbar-probe::-webkit-scrollbar {
-    width: var(--sl-scrollbar-width);
+.nk-scrollbar-probe::-webkit-scrollbar {
+    width: var(--nk-scrollbar-width);
 }
 .tc-story-river::-webkit-scrollbar-track,
 .tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar-track {
-    background: var(--sl-scrollbar-track-color);
+    background: var(--nk-scrollbar-track-color);
 }
 /* Transparent border + background-clip:padding-box shrinks the visible thumb inside the
     scrollbar-width track, giving a floating "pill" look instead of an edge-to-edge bar. */
 .tc-story-river::-webkit-scrollbar-thumb,
 .tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar-thumb {
-    background-color: var(--sl-scrollbar-thumb-color);
-    border-radius: var(--sl-scrollbar-radius);
+    background-color: var(--nk-scrollbar-thumb-color);
+    border-radius: var(--nk-scrollbar-radius);
     border: 2px solid transparent;
     background-clip: padding-box;
 }
 .tc-story-river::-webkit-scrollbar-thumb:hover,
 .tc-tab-content.tc-sidebar-tabs-main::-webkit-scrollbar-thumb:hover {
-    background-color: var(--sl-scrollbar-thumb-hover-color);
+    background-color: var(--nk-scrollbar-thumb-hover-color);
 }

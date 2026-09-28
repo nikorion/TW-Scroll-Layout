@@ -48,7 +48,7 @@ Le storyview classique appelle `$tw.pageScroller.scrollIntoView()` qui scrolle l
 Layout TW (`tag $:/tags/Layout`), sélectionné via `$:/layout` — plus d'override de `$:/core/ui/PageTemplate/story`. Le story river y est **inline** : `<$scrollable class="tc-story-river" fallthrough="no">` encadrant `story-backdrop` (première section) et `story-frontdrop` (dernière), sur lesquelles le CSS restaure les marges de padding perdues.
 
 ### styles/ — deux fichiers, découpage volontaire
-- **styles.tid** — la //vraie// feuille de style (`tag $:/tags/Stylesheet`, `type text/vnd.tiddlywiki`), seule appliquée par TW. Porte le wikitext : `<$reveal>` gaté sur `$:/layout`, vars `--sl-scrollbar-*` transcluses depuis `$:/config/nikorion/scroll-layout/...`, branches fixed-fluid/fluid-fixed et sticky titles. Transclut `base.css` (`{{.../styles/base.css}}`).
+- **styles.tid** — la //vraie// feuille de style (`tag $:/tags/Stylesheet`, `type text/vnd.tiddlywiki`), seule appliquée par TW. Porte le wikitext : `<$reveal>` gaté sur `$:/layout`, vars `--nk-scrollbar-*` transcluses depuis `$:/config/nikorion/scroll-layout/...`, branches fixed-fluid/fluid-fixed et sticky titles. Transclut `base.css` (`{{.../styles/base.css}}`).
 - **base.css** — CSS pur, statique, **non taggé Stylesheet** (jamais appliqué seul, uniquement injecté par la transclusion ci-dessus) : `overflow:hidden` html/body, hauteur du river `calc(100vh - storytop)`, chaîne flex sidebar jusqu'au `.tc-tab-content`, scrollbars Gecko/Webkit, `tc-tiddler-stuck`.
 
 Titres : les deux suivent titre=chemin (`.../scroll-layout/styles/styles` et `.../scroll-layout/styles/base.css`), conformément à la convention du workspace. Rien de dérogatoire ici.

@@ -12,7 +12,7 @@ exports.after = ["startup"];
 exports.synchronous = true;
 
 /*
- * A detached, off-screen probe carrying the river's scrollbar styling (.sl-scrollbar-probe in
+ * A detached, off-screen probe carrying the river's scrollbar styling (.nk-scrollbar-probe in
  * base.css shares the same scrollbar-width / ::-webkit-scrollbar rules and inherits the config
  * vars from :root), forced to overflow so a scrollbar always exists to measure. Created once and
  * kept in the DOM; its offsetWidth/clientWidth track live config changes through the CSS vars.
@@ -23,14 +23,14 @@ function getScrollbarProbe() {
 		return scrollbarProbe;
 	}
 	scrollbarProbe = document.createElement("div");
-	scrollbarProbe.className = "sl-scrollbar-probe";
+	scrollbarProbe.className = "nk-scrollbar-probe";
 	scrollbarProbe.setAttribute("aria-hidden", "true");
 	document.body.appendChild(scrollbarProbe);
 	return scrollbarProbe;
 }
 
 /*
- * Measure the browser's real scrollbar layout width and publish it as --sl-scrollbar-real-width
+ * Measure the browser's real scrollbar layout width and publish it as --nk-scrollbar-real-width
  * on the root element. The stylesheet subtracts it from the configured right-hand gaps so the
  * story content keeps the same width whatever scrollbar the browser actually draws (thin/auto/
  * none, per engine and platform); overlay scrollbars measure 0 and leave the gaps untouched.
@@ -46,7 +46,7 @@ function getScrollbarProbe() {
 function updateScrollbarWidthVar() {
 	var probe = getScrollbarProbe(),
 		width = Math.max(0, probe.offsetWidth - probe.clientWidth);
-	document.documentElement.style.setProperty("--sl-scrollbar-real-width", width + "px");
+	document.documentElement.style.setProperty("--nk-scrollbar-real-width", width + "px");
 }
 
 /*
