@@ -21,17 +21,17 @@ The plugin activates only when its layout is selected (`$:/layout` = `$:/plugins
 
 ## Features
 
-### Independent scroll areas
+**Independent scroll areas**
 
 The story river becomes a `$scrollable` widget (`fallthrough="no"`), which intercepts all scroll events and scrolls the river column instead of the window. The sidebar uses a full flex chain so height propagates from `.tc-sidebar-scrollable` down to the tab content panel, which is the only scrolling node.
 
-### Sticky tiddler titles
+**Sticky tiddler titles**
 
 When the `stickytitles` option is enabled in the Vanilla theme, tiddler titles stick to the top of the story river as you scroll. The plugin gates this behaviour on the same theme option, so disabling sticky titles in theme settings also disables it here.
 
 When a sticky title detaches from its frame (the frame has scrolled above the river's top edge), the class `tc-tiddler-stuck` is added to the title element. This triggers a visual treatment: negative side margins extend the bar edge-to-edge, and a drop shadow signals the detached state.
 
-### Sidebar layout support
+**Sidebar layout support**
 
 Both Vanilla sidebar layouts are handled:
 
@@ -42,7 +42,7 @@ Both Vanilla sidebar layouts are handled:
 
 When the sidebar is hidden, the river expands to fill the available width automatically.
 
-### Scroll-into-view patch
+**Scroll-into-view patch**
 
 The classic storyview calls `$tw.pageScroller.scrollIntoView()`, which scrolls the browser window. When the river is a `$scrollable` widget, `overflow:hidden` on `body` prevents window scrolling — newly opened tiddlers would not scroll into view.
 
@@ -83,7 +83,7 @@ Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs
 
 ## Version history
 
-### v1.0.0
+**v1.0.0**
 
 Initial release. Isolated scroll areas for story river and sidebar tab content. Sticky titles with `tc-tiddler-stuck` detached-frame state. `$tw.pageScroller` patch for scroll-into-view in `$scrollable` containers. Full support for fixed-fluid and fluid-fixed sidebar layouts with sidebar-hidden fallback.
 

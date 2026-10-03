@@ -21,17 +21,17 @@ Le plugin ne s'active que lorsque sa mise en page est sélectionnée (`$:/layout
 
 ## Fonctionnalités
 
-### Zones de défilement indépendantes
+**Zones de défilement indépendantes**
 
 Le story river devient un widget `$scrollable` (`fallthrough="no"`), qui intercepte tous les événements de défilement et fait défiler la colonne du river au lieu de la fenêtre. La barre latérale utilise une chaîne flex complète pour que la hauteur se propage de `.tc-sidebar-scrollable` jusqu'au panneau de contenu des onglets, seul nœud qui défile.
 
-### Titres de tiddlers collants
+**Titres de tiddlers collants**
 
 Quand l'option `stickytitles` est activée dans le thème Vanilla, les titres des tiddlers restent collés en haut du story river pendant le défilement. Le plugin conditionne ce comportement à la même option du thème : désactiver les titres collants dans les réglages du thème les désactive donc aussi ici.
 
 Quand un titre collant se détache de son cadre (le cadre a défilé au-dessus du bord supérieur du river), la classe `tc-tiddler-stuck` est ajoutée à l'élément du titre. Elle déclenche un traitement visuel : des marges latérales négatives étendent la barre d'un bord à l'autre, et une ombre portée signale l'état détaché.
 
-### Prise en charge des mises en page de la barre latérale
+**Prise en charge des mises en page de la barre latérale**
 
 Les deux mises en page de barre latérale de Vanilla sont gérées :
 
@@ -42,7 +42,7 @@ Les deux mises en page de barre latérale de Vanilla sont gérées :
 
 Quand la barre latérale est masquée, le river s'étend automatiquement à toute la largeur disponible.
 
-### Correctif du défilement vers l'élément
+**Correctif du défilement vers l'élément**
 
 Le storyview classique appelle `$tw.pageScroller.scrollIntoView()`, qui fait défiler la fenêtre du navigateur. Quand le river est un widget `$scrollable`, le `overflow:hidden` posé sur `body` empêche le défilement de la fenêtre — les tiddlers nouvellement ouverts ne défileraient pas jusqu'à l'écran.
 
@@ -83,7 +83,7 @@ Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pn
 
 ## Historique des versions
 
-### v1.0.0
+**v1.0.0**
 
 Première version. Zones de défilement isolées pour le story river et le contenu des onglets de la barre latérale. Titres collants avec l'état de cadre détaché `tc-tiddler-stuck`. Correctif de `$tw.pageScroller` pour le défilement vers l'élément dans les conteneurs `$scrollable`. Prise en charge complète des mises en page de barre latérale fixed-fluid et fluid-fixed, avec repli quand la barre latérale est masquée.
 
