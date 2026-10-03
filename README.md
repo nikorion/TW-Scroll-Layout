@@ -7,26 +7,6 @@
 
 A TiddlyWiki layout plugin that gives the story river, sidebar tabs, and tab content their own independent scroll areas. The page no longer scrolls as a whole — each zone scrolls in place.
 
----
-
-## Contents
-
-- [Overview](#overview)
-- [Features](#features)
-  - [Independent scroll areas](#independent-scroll-areas)
-  - [Sticky tiddler titles](#sticky-tiddler-titles)
-  - [Sidebar layout support](#sidebar-layout-support)
-  - [Scroll-into-view patch](#scroll-into-view-patch)
-- [Installation](#installation)
-- [Development](#development)
-- [Files](#files)
-- [Compatibility](#compatibility)
-- [Version history](#version-history)
-  - [v1.0.0](#v100)
-- [License](#license)
-
----
-
 ## Overview
 
 By default, TiddlyWiki scrolls the entire browser window. This plugin replaces that behaviour with isolated scroll areas:
@@ -38,10 +18,6 @@ By default, TiddlyWiki scrolls the entire browser window. This plugin replaces t
 Everything else (topbar, sidebar header, layout chrome) remains fixed on screen.
 
 The plugin activates only when its layout is selected (`$:/layout` = `$:/plugins/nikorion/scroll-layout/layout`). All other layouts fall back to exact core behaviour — no side effects when the layout is inactive.
-
-[↑](#contents "Back to contents")
-
----
 
 ## Features
 
@@ -72,20 +48,12 @@ The classic storyview calls `$tw.pageScroller.scrollIntoView()`, which scrolls t
 
 The startup module patches `$tw.pageScroller.scrollIntoView`: when the target element is inside `.tc-story-river`, the patch uses the browser-native `element.scrollIntoView()` instead, which scrolls the nearest scrollable ancestor (the `$scrollable` widget's inner div). A `requestAnimationFrame` defers the check so newly inserted DOM nodes have time to connect before `closest()` runs.
 
-[↑](#contents "Back to contents")
-
----
-
 ## Installation
 
 1. Download `TW-Scroll-Layout-Plugin.json` from the [latest release](https://github.com/nikorion/TW-Scroll-Layout/releases/latest)
 2. Drag and drop it into your TiddlyWiki (≥ 5.3.0)
 3. Save and reload
 4. Open the layout picker (gear icon → Layout) and select **Scroll Layout**
-
-[↑](#contents "Back to contents")
-
----
 
 ## Development
 
@@ -97,10 +65,6 @@ pnpm build    # generates dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Lay
 
 Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs an orchestrator (`scripts/dev.cjs`) that pairs nodemon (reboots TW only on JS module / `plugin.info` changes) with an SSE content-HMR server (`scripts/dev-hmr.cjs`): content tiddlers (`.tid`/`.multids`) are hot-swapped in the browser with state preserved, while module changes trigger a reboot then a full reload once TW is back up.
 
-[↑](#contents "Back to contents")
-
----
-
 ## Files
 
 | File | Role |
@@ -111,19 +75,11 @@ Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs
 | `src/scroll-layout/stylesheet.tid` | All CSS — gated on the layout being active |
 | `src/scroll-layout/modules/startup.js` | `$tw.pageScroller` patch + `tc-tiddler-stuck` scroll listener |
 
-[↑](#contents "Back to contents")
-
----
-
 ## Compatibility
 
 - TiddlyWiki ≥ 5.3.0
 - Vanilla theme (the CSS targets Vanilla's metric tiddlers and class names)
 - No external dependencies
-
-[↑](#contents "Back to contents")
-
----
 
 ## Version history
 
@@ -131,12 +87,6 @@ Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs
 
 Initial release. Isolated scroll areas for story river and sidebar tab content. Sticky titles with `tc-tiddler-stuck` detached-frame state. `$tw.pageScroller` patch for scroll-into-view in `$scrollable` containers. Full support for fixed-fluid and fluid-fixed sidebar layouts with sidebar-hidden fallback.
 
-[↑](#contents "Back to contents")
-
----
-
 ## License
 
 MIT License — see `LICENSE`
-
-[↑](#contents "Back to contents")
