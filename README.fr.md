@@ -39,7 +39,7 @@ Tout le reste (barre supérieure, en-tête de la barre latérale, cadre de la mi
 
 Le plugin ne s'active que lorsque sa mise en page est sélectionnée (`$:/layout` = `$:/plugins/nikorion/scroll-layout/layout`). Toutes les autres mises en page retrouvent exactement le comportement du core — aucun effet de bord quand la mise en page est inactive.
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")
 
 ---
 
@@ -72,7 +72,7 @@ Le storyview classique appelle `$tw.pageScroller.scrollIntoView()`, qui fait dé
 
 Le module de démarrage corrige `$tw.pageScroller.scrollIntoView` : quand l'élément cible se trouve dans `.tc-story-river`, le correctif utilise à la place le `element.scrollIntoView()` natif du navigateur, qui fait défiler l'ancêtre défilant le plus proche (le div intérieur du widget `$scrollable`). Un `requestAnimationFrame` diffère la vérification pour laisser aux nœuds DOM nouvellement insérés le temps de se rattacher avant l'appel à `closest()`.
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")
 
 ---
 
@@ -83,7 +83,7 @@ Le module de démarrage corrige `$tw.pageScroller.scrollIntoView` : quand l'él�
 3. Enregistrer et recharger
 4. Ouvrir le sélecteur de mise en page (icône d'engrenage → Layout) et choisir **Scroll Layout**
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")
 
 ---
 
@@ -97,7 +97,7 @@ pnpm build    # génère dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Layo
 
 Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pnpm dev` lance un orchestrateur (`scripts/dev.cjs`) qui associe nodemon (ne redémarre TW que sur modification d'un module JS ou de `plugin.info`) à un serveur de rechargement à chaud du contenu par SSE (`scripts/dev-hmr.cjs`) : les tiddlers de contenu (`.tid`/`.multids`) sont remplacés à chaud dans le navigateur, état conservé, tandis qu'une modification de module déclenche un redémarrage puis un rechargement complet une fois TW revenu.
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")
 
 ---
 
@@ -111,7 +111,7 @@ Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pn
 | `src/scroll-layout/stylesheet.tid` | Tout le CSS — conditionné à l'activation de la mise en page |
 | `src/scroll-layout/modules/startup.js` | Correctif de `$tw.pageScroller` + écouteur de défilement pour `tc-tiddler-stuck` |
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")
 
 ---
 
@@ -121,7 +121,7 @@ Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pn
 - Thème Vanilla (le CSS cible les tiddlers de métriques et les noms de classes de Vanilla)
 - Aucune dépendance externe
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")
 
 ---
 
@@ -131,7 +131,7 @@ Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pn
 
 Première version. Zones de défilement isolées pour le story river et le contenu des onglets de la barre latérale. Titres collants avec l'état de cadre détaché `tc-tiddler-stuck`. Correctif de `$tw.pageScroller` pour le défilement vers l'élément dans les conteneurs `$scrollable`. Prise en charge complète des mises en page de barre latérale fixed-fluid et fluid-fixed, avec repli quand la barre latérale est masquée.
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")
 
 ---
 
@@ -139,4 +139,4 @@ Première version. Zones de défilement isolées pour le story river et le conte
 
 Licence MIT — voir `LICENSE`
 
-[↑ Retour au sommaire](#sommaire)
+[↑](#sommaire "Retour au sommaire")

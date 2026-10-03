@@ -39,7 +39,7 @@ Everything else (topbar, sidebar header, layout chrome) remains fixed on screen.
 
 The plugin activates only when its layout is selected (`$:/layout` = `$:/plugins/nikorion/scroll-layout/layout`). All other layouts fall back to exact core behaviour — no side effects when the layout is inactive.
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
 
 ---
 
@@ -72,7 +72,7 @@ The classic storyview calls `$tw.pageScroller.scrollIntoView()`, which scrolls t
 
 The startup module patches `$tw.pageScroller.scrollIntoView`: when the target element is inside `.tc-story-river`, the patch uses the browser-native `element.scrollIntoView()` instead, which scrolls the nearest scrollable ancestor (the `$scrollable` widget's inner div). A `requestAnimationFrame` defers the check so newly inserted DOM nodes have time to connect before `closest()` runs.
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
 
 ---
 
@@ -83,7 +83,7 @@ The startup module patches `$tw.pageScroller.scrollIntoView`: when the target el
 3. Save and reload
 4. Open the layout picker (gear icon → Layout) and select **Scroll Layout**
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
 
 ---
 
@@ -97,7 +97,7 @@ pnpm build    # generates dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Lay
 
 Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs an orchestrator (`scripts/dev.cjs`) that pairs nodemon (reboots TW only on JS module / `plugin.info` changes) with an SSE content-HMR server (`scripts/dev-hmr.cjs`): content tiddlers (`.tid`/`.multids`) are hot-swapped in the browser with state preserved, while module changes trigger a reboot then a full reload once TW is back up.
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
 
 ---
 
@@ -111,7 +111,7 @@ Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs
 | `src/scroll-layout/stylesheet.tid` | All CSS — gated on the layout being active |
 | `src/scroll-layout/modules/startup.js` | `$tw.pageScroller` patch + `tc-tiddler-stuck` scroll listener |
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
 
 ---
 
@@ -121,7 +121,7 @@ Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs
 - Vanilla theme (the CSS targets Vanilla's metric tiddlers and class names)
 - No external dependencies
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
 
 ---
 
@@ -131,7 +131,7 @@ Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs
 
 Initial release. Isolated scroll areas for story river and sidebar tab content. Sticky titles with `tc-tiddler-stuck` detached-frame state. `$tw.pageScroller` patch for scroll-into-view in `$scrollable` containers. Full support for fixed-fluid and fluid-fixed sidebar layouts with sidebar-hidden fallback.
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
 
 ---
 
@@ -139,4 +139,4 @@ Initial release. Isolated scroll areas for story river and sidebar tab content. 
 
 MIT License — see `LICENSE`
 
-[↑ Back to contents](#contents)
+[↑](#contents "Back to contents")
