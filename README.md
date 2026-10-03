@@ -1,5 +1,7 @@
 # TW-Scroll-Layout
 
+**English** · [Français](README.fr.md)
+
 ![Status](https://img.shields.io/badge/status-stable-green)
 ![TiddlyWiki](https://img.shields.io/badge/TiddlyWiki-%E2%89%A55.3.0-blue)
 
@@ -65,7 +67,7 @@ The startup module patches `$tw.pageScroller.scrollIntoView`: when the target el
 
 ```
 pnpm install
-pnpm dev      # TW dev server on :8080 (default; free port if busy) with content HMR over SSE
+pnpm dev      # dev wiki + hot reload; the URL (random free port) is printed on start
 pnpm build    # generates dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Layout-Wiki.html
 ```
 
