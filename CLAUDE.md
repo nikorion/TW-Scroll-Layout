@@ -21,16 +21,16 @@ src/scroll-layout/              ← sources du plugin (seul dossier à toucher)
   plugin.info                   ← métadonnées du plugin
 
 wiki/                           ← wiki TW de développement
-  tiddlywiki.info               ← config : plugins chargés, targets build plugin-json + html
+  tiddlywiki.info               ← config : plugins chargés, targets build plugin-json + demo
   tiddlers/
     system/                     ← tiddlers de config UI + $__config_SyncFilter.tid
 
 dist/                           ← généré par pnpm build, gitignored
-docs/                           ← TW-Scroll-Layout-Wiki.html standalone (distribution)
+docs/                           ← démo générée par `pnpm build` (`index.html` + moteur externe), gitignorée, publiée par la CI
 ```
 
 ## Spécificités dev
-- `pnpm build` → `dist/TW-Scroll-Layout-Plugin.json` + `docs/TW-Scroll-Layout-Wiki.html`. Build HTML `publishFilter` (`../guides/build-html-publishfilter.md`) : `highlight` gardé (officiel TW).
+- `pnpm build` → `dist/TW-Scroll-Layout-Plugin.json` + démo `docs/` (publiée par la CI : `../guides/publication.md`). Démo `publishFilter` (`../guides/build-html-publishfilter.md`) : `highlight` gardé (officiel TW).
 - HMR : les `.tid`/`.css`/`.multids` (`layout`, `styles/styles`, `styles/base.css`…) sont poussés à chaud ; un changement de `startup.js` reboote. `eslint.config.js` : ES2021. Plugins actifs du wiki : scroll-layout, filesystem, tiddlyweb.
 
 ## Architecture du plugin

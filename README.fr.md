@@ -50,17 +50,25 @@ Le module de démarrage corrige `$tw.pageScroller.scrollIntoView` : quand l'él�
 
 ## Installation
 
-1. Télécharger `TW-Scroll-Layout-Plugin.json` depuis la [dernière version](https://github.com/nikorion/TW-Scroll-Layout/releases/latest)
-2. Le glisser-déposer dans votre TiddlyWiki (≥ 5.3.0)
-3. Enregistrer et recharger
-4. Ouvrir le sélecteur de mise en page (icône d'engrenage → Layout) et choisir **Scroll Layout**
+**Démo en ligne** : [https://nikorion.github.io/TW-Scroll-Layout/](https://nikorion.github.io/TW-Scroll-Layout/) — pour essayer le plugin avant de l'installer.
+
+**Depuis la bibliothèque de plugins nikorion** (TiddlyWiki propose ensuite chaque nouvelle version en mise à jour) :
+
+1. Dans votre wiki, créer un tiddler tagué `$:/tags/PluginLibrary`, avec un champ `url` valant `https://nikorion.github.io/tw-dev/library/index.html` et une `caption` comme `nikorion`.
+2. Ouvrir *Panneau de configuration → Plugins → Obtenir d'autres plugins*, choisir la bibliothèque nikorion et installer **Scroll Layout**.
+
+**À la main** : télécharger [`TW-Scroll-Layout-Plugin.json`](https://nikorion.github.io/TW-Scroll-Layout/TW-Scroll-Layout-Plugin.json) et le glisser-déposer sur votre wiki.
+
+Nécessite TiddlyWiki ≥ 5.3.0.
+
+Ensuite, ouvrir le sélecteur de mise en page (icône d'engrenage → Layout) et choisir **Scroll Layout**.
 
 ## Développement
 
 ```
 pnpm install
 pnpm dev      # wiki de dev + rechargement à chaud ; l'URL (port libre aléatoire) s'affiche au démarrage
-pnpm build    # génère dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Layout-Wiki.html
+pnpm build    # dist/TW-Scroll-Layout-Plugin.json + docs/ (wiki de démo, publié par la CI)
 ```
 
 Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pnpm dev` lance le serveur de dev partagé `../tw-dev` (cloné à côté de ce dépôt), qui associe nodemon (ne redémarre TW que sur modification d'un module JS ou de `plugin.info`) à un serveur de rechargement à chaud du contenu par SSE : les tiddlers de contenu (`.tid`, `.multids`, `.css`…) sont remplacés à chaud dans le navigateur, état conservé, tandis qu'une modification de module déclenche un redémarrage puis un rechargement complet une fois TW revenu.

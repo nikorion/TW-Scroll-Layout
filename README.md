@@ -50,17 +50,25 @@ The startup module patches `$tw.pageScroller.scrollIntoView`: when the target el
 
 ## Installation
 
-1. Download `TW-Scroll-Layout-Plugin.json` from the [latest release](https://github.com/nikorion/TW-Scroll-Layout/releases/latest)
-2. Drag and drop it into your TiddlyWiki (≥ 5.3.0)
-3. Save and reload
-4. Open the layout picker (gear icon → Layout) and select **Scroll Layout**
+**Live demo**: [https://nikorion.github.io/TW-Scroll-Layout/](https://nikorion.github.io/TW-Scroll-Layout/) — try the plugin before installing it.
+
+**From the nikorion plugin library** (TiddlyWiki then offers each new version as an update):
+
+1. In your wiki, create a tiddler tagged `$:/tags/PluginLibrary`, with a field `url` set to `https://nikorion.github.io/tw-dev/library/index.html` and a `caption` such as `nikorion`.
+2. Open *Control Panel → Plugins → Get more plugins*, choose the nikorion library and install **Scroll Layout**.
+
+**By hand**: download [`TW-Scroll-Layout-Plugin.json`](https://nikorion.github.io/TW-Scroll-Layout/TW-Scroll-Layout-Plugin.json) and drag it onto your wiki.
+
+Requires TiddlyWiki ≥ 5.3.0.
+
+Then open the layout picker (gear icon → Layout) and select **Scroll Layout**.
 
 ## Development
 
 ```
 pnpm install
 pnpm dev      # dev wiki + hot reload; the URL (random free port) is printed on start
-pnpm build    # generates dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Layout-Wiki.html
+pnpm build    # dist/TW-Scroll-Layout-Plugin.json + docs/ (demo wiki, published by CI)
 ```
 
 Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs the shared dev server `../tw-dev` (cloned next to this repository), which pairs nodemon (reboots TW only on JS module / `plugin.info` changes) with an SSE content-HMR server: content tiddlers (`.tid`, `.multids`, `.css`…) are hot-swapped in the browser with state preserved, while module changes trigger a reboot then a full reload once TW is back up.
