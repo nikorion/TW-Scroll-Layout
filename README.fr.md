@@ -63,7 +63,7 @@ pnpm dev      # wiki de dev + rechargement à chaud ; l'URL (port libre aléatoi
 pnpm build    # génère dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Layout-Wiki.html
 ```
 
-Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pnpm dev` lance un orchestrateur (`scripts/dev.cjs`) qui associe nodemon (ne redémarre TW que sur modification d'un module JS ou de `plugin.info`) à un serveur de rechargement à chaud du contenu par SSE (`scripts/dev-hmr.cjs`) : les tiddlers de contenu (`.tid`/`.multids`) sont remplacés à chaud dans le navigateur, état conservé, tandis qu'une modification de module déclenche un redémarrage puis un rechargement complet une fois TW revenu.
+Les sources sont dans `src/scroll-layout/`. Le wiki de dev est dans `wiki/`. `pnpm dev` lance le serveur de dev partagé `../tw-dev` (cloné à côté de ce dépôt), qui associe nodemon (ne redémarre TW que sur modification d'un module JS ou de `plugin.info`) à un serveur de rechargement à chaud du contenu par SSE : les tiddlers de contenu (`.tid`, `.multids`, `.css`…) sont remplacés à chaud dans le navigateur, état conservé, tandis qu'une modification de module déclenche un redémarrage puis un rechargement complet une fois TW revenu.
 
 ## Fichiers
 

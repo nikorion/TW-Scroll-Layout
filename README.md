@@ -63,7 +63,7 @@ pnpm dev      # dev wiki + hot reload; the URL (random free port) is printed on 
 pnpm build    # generates dist/TW-Scroll-Layout-Plugin.json + docs/TW-Scroll-Layout-Wiki.html
 ```
 
-Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs an orchestrator (`scripts/dev.cjs`) that pairs nodemon (reboots TW only on JS module / `plugin.info` changes) with an SSE content-HMR server (`scripts/dev-hmr.cjs`): content tiddlers (`.tid`/`.multids`) are hot-swapped in the browser with state preserved, while module changes trigger a reboot then a full reload once TW is back up.
+Sources are in `src/scroll-layout/`. The dev wiki is in `wiki/`. `pnpm dev` runs the shared dev server `../tw-dev` (cloned next to this repository), which pairs nodemon (reboots TW only on JS module / `plugin.info` changes) with an SSE content-HMR server: content tiddlers (`.tid`, `.multids`, `.css`…) are hot-swapped in the browser with state preserved, while module changes trigger a reboot then a full reload once TW is back up.
 
 ## Files
 
