@@ -65,6 +65,8 @@ Then open the layout picker (gear icon → Layout) and select **Scroll Layout**.
 
 ## Development
 
+Clone [tw-dev](https://github.com/nikorion/tw-dev) next to this repository: `pnpm dev` runs it, and it links by itself the nikorion plugins the dev wiki loads — from clones sitting next to this one (`../TW-Math`…), so your edits to them are live, otherwise from a read-only copy it fetches from GitHub. No symlink, no `TIDDLYWIKI_PLUGIN_PATH`, no admin rights. `pnpm build` alone still needs `TIDDLYWIKI_PLUGIN_PATH`: point it to `../tw-dev/.state/TW-Scroll-Layout/plugins`, created by `pnpm dev`.
+
 ```
 pnpm install
 pnpm dev      # dev wiki + hot reload; the URL (random free port) is printed on start
