@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#14151f">
+<title>TW-Scroll-Layout</title>
+<meta name="description" content="A TiddlyWiki layout plugin that gives the story river, sidebar tabs, and tab content their own independent scroll areas. The page no longer scrolls as a…">
+<meta name="generator" content="readme-html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23b8a4ff'/%3E%3Cstop offset='.55' stop-color='%236fd3f2'/%3E%3Cstop offset='1' stop-color='%23ff9fcf'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%2314151f'/%3E%3Cpath d='M9 8h9a5 5 0 0 1 0 10h-4l6 6' fill='none' stroke='url(%23g)' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M9 8v16' stroke='url(%23g)' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+@layer reset, base, mise-en-page, composants, code, utilitaires;
+
+/* ---------- Jetons de design ----------
+   Deux mesures sur --fond (#14151f) : WCAG 2 (ratio) et APCA (Lc, WCAG 3 en projet).
+   Texte 11,6:1 / Lc 76 (doux, sans blanc pur, comme le chapô) ; titres Lc 97 ; chapô Lc 76 ;
+   liens, survol, code en ligne Lc 74 (minimum APCA pour 18,5 px en graisse 400) ;
+   atténué Lc 70 (sommaire, étiquettes) ; commentaires de code Lc 60. */
+:root {
+  color-scheme: dark;
+  --fond: #14151f;
+  --fond-haut: #191a28;
+  --surface: #1c1e2c;
+  --surface-2: #242739;
+  --bordure: #30344a;
+  --bordure-douce: #262a3c;
+
+  --texte: #cacedc; /* même teinte que le chapô : moins d'éblouissement sur fond sombre */
+  --texte-fort: #eef0f8;
+  --texte-attenue: #c0c4d3;
+
+  --violet: #b8a4ff;
+  --cyan: #6fd3f2;
+  --rose: #ff9fcf;
+  --ambre: #ffc778;
+  --vert: #86e3b0;
+  --lien: #96d2ff;
+  --lien-survol: #ffb7cc; /* rose tiré vers le rouge */
+  --degrade: linear-gradient(100deg, var(--violet) 0%, var(--cyan) 52%, var(--rose) 100%);
+
+  --code-fond: #10111a;
+  --code-inline-fond: #252840;
+  --code-inline: #ffc48d;
+
+  --police: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, "Inter", "Noto Sans", Roboto, Ubuntu, sans-serif;
+  --police-sous-titre: Cambria, Georgia, "Sitka Text", "Palatino Linotype", serif;
+  --police-titre: "Sitka Heading", "Sitka Display", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Cambria, Georgia, serif;
+  --police-code: "Cascadia Code", "JetBrains Mono", "Fira Code", ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace;
+
+  --mesure: 33.1em; /* en em : suit la taille du texte ; <= 80 caractères sur les lignes les plus denses (WCAG 1.4.8 AAA, mesuré) */
+  --rayon: 0.75rem;
+  --rayon-petit: 0.4rem;
+  --marge: clamp(1rem, 4vw, 2.5rem);
+  --haut-fixe: 1.5rem;
+}
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; }
+  img, svg { display: block; max-inline-size: 100%; block-size: auto; }
+  button { font: inherit; color: inherit; }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+    scrollbar-color: var(--bordure) var(--fond);
+    scroll-padding-block-start: var(--haut-fixe);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  body {
+    isolation: isolate;
+    min-block-size: 100dvh;
+    background: var(--fond);
+    color: var(--texte);
+    font-family: var(--police);
+    font-size: clamp(1rem, 0.92rem + 0.3vw, 1.1563rem);
+    line-height: 1.72;
+    font-kerning: normal;
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-wrap: break-word;
+  }
+  ::selection { background: rgb(184 164 255 / 0.32); color: var(--texte-fort); }
+  :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+    border-radius: var(--rayon-petit);
+  }
+  a { color: var(--lien); text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 0.26em; text-decoration-color: rgb(150 210 255 / 0.3); }
+  a:hover { color: var(--lien-survol); text-decoration-color: currentColor; }
+  @media (prefers-reduced-motion: no-preference) {
+    /* Entrée rapide, sortie lente : le rose s'efface en douceur */
+    a { transition: color 0.6s ease, text-decoration-color 0.6s ease; }
+    a:hover { transition-duration: 0.15s; }
+    .ancre { transition: opacity 0.45s ease, color 0.3s ease; }
+    :is(h2, h3, h4, h5, h6):hover .ancre, .ancre:focus-visible { transition-duration: 0.9s, 0.3s; }
+  }
+}
+
+@layer mise-en-page {
+  .grille {
+    display: grid;
+    grid-template-columns: minmax(0, var(--mesure));
+    justify-content: center;
+    column-gap: clamp(2rem, 5vw, 4.5rem);
+    padding-inline: var(--marge);
+  }
+  @media (min-width: 70rem) {
+    .grille { grid-template-columns: 14.5rem minmax(0, var(--mesure)); }
+    .grille > :only-child, .entete-texte, .pied p { grid-column: 2; }
+  }
+
+  .entete { position: relative; overflow: clip; padding-block: clamp(3rem, 9vw, 6.5rem) clamp(2rem, 5vw, 3.5rem); }
+  /* Halo d'aurore : taches de couleur unie floutées (pas de dégradé), pour que les outils
+     mesurent le contraste réel du texte posé dessus — au plus clair, il garde > 10:1. */
+  .aurore { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .aurore span { position: absolute; border-radius: 50%; filter: blur(90px); }
+  .aurore span:nth-child(1) { inset: -9rem auto auto -6rem; inline-size: 38rem; block-size: 20rem; background-color: rgb(184 164 255 / 0.16); }
+  .aurore span:nth-child(2) { inset: -8rem -6rem auto auto; inline-size: 32rem; block-size: 18rem; background-color: rgb(111 211 242 / 0.12); }
+  .aurore span:nth-child(3) { inset: 2rem auto auto 45%; inline-size: 24rem; block-size: 12rem; background-color: rgb(255 159 207 / 0.07); }
+  .entete h1 {
+    font-family: var(--police-titre);
+    font-size: clamp(2.3rem, 1.5rem + 3.6vw, 3.9rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.012em;
+    color: var(--texte-fort);
+    text-wrap: balance;
+    margin-block-end: 1.1rem;
+  }
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .entete h1 {
+      background: var(--degrade);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+  .chapo { font-size: 1.18em; line-height: 1.62; color: #cacedc; max-inline-size: 40rem; text-wrap: pretty; }
+  .chapo > * + * { margin-block-start: 0.8em; }
+  .badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 1.5rem; }
+  .badges img { block-size: 1.25rem; inline-size: auto; border-radius: 0.25rem; }
+
+  .langues ul { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin-block-end: 1.6rem; }
+  .langues :is(a, span) {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border: 1px solid var(--bordure);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    color: var(--texte-attenue);
+  }
+  .langues a:hover { color: var(--texte-fort); border-color: var(--violet); }
+  .langues [aria-current] { color: var(--fond); background: var(--texte-fort); border-color: var(--texte-fort); }
+
+  .corps { padding-block-end: 4rem; }
+  main:focus { outline: none; }
+
+  .sommaire {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin-block-end: 2.5rem;
+    padding: 1.1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--bordure-douce);
+    border-radius: var(--rayon);
+  }
+  .sommaire h2 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--texte-attenue);
+    margin-block-end: 0.7rem;
+  }
+  .sommaire ol { list-style: none; padding: 0; display: grid; gap: 0.1rem; }
+  .sommaire ol ol { padding-inline-start: 0.85rem; margin-block: 0.1rem 0.3rem; }
+  .sommaire a {
+    display: block;
+    padding: 0.28rem 0.7rem;
+    border-inline-start: 2px solid transparent;
+    border-radius: 0 var(--rayon-petit) var(--rayon-petit) 0;
+    color: var(--texte-attenue);
+    text-decoration: none;
+  }
+  .sommaire a:hover { color: var(--texte-fort); background: var(--surface-2); }
+  .sommaire a[aria-current] { color: var(--texte-fort); border-inline-start-color: var(--cyan); background: rgb(111 211 242 / 0.08); }
+  @media (min-width: 70rem) {
+    .sommaire {
+      position: sticky;
+      inset-block-start: 2rem;
+      align-self: start;
+      max-block-size: calc(100dvh - 4rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      margin: 0;
+      padding: 0;
+      background: none;
+      border: 0;
+    }
+  }
+  @media (min-width: 40rem) and (max-width: 69.99rem) {
+    .sommaire > ol { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1rem; }
+  }
+
+  .pied { border-block-start: 1px solid var(--bordure-douce); padding-block: 2rem 3rem; font-size: 0.875rem; color: var(--texte-attenue); }
+  .pied code { font-family: var(--police-code); font-size: 0.92em; color: var(--texte); }
+
+  .progression {
+    position: fixed;
+    inset: 0 0 auto;
+    block-size: 3px;
+    background: var(--degrade);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    z-index: 10;
+    display: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    .progression { display: block; animation: progression linear both; animation-timeline: scroll(root); }
+  }
+  @keyframes progression { to { transform: scaleX(1); } }
+}
+
+@layer composants {
+  /* Semi-light (350) : choix de l'utilisateur, plus fin sur fond sombre ; chapô et interface restent en 400 */
+  .prose { font-weight: 350; text-wrap: pretty; hanging-punctuation: first; }
+  .prose > * + * { margin-block-start: 1.15em; }
+
+  .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    position: relative;
+    font-family: var(--police-sous-titre);
+    color: var(--texte-fort);
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+    scroll-margin-block-start: var(--haut-fixe);
+  }
+  .prose h2 {
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 1.9rem);
+    font-weight: 700;
+    margin-block-start: 4.2rem;
+  }
+  .prose > h2:first-child { margin-block-start: 0; }
+  .prose h2::before {
+    content: "";
+    display: block;
+    inline-size: 2.25rem;
+    block-size: 3px;
+    border-radius: 3px;
+    background: var(--degrade);
+    margin-block-end: 0.9rem;
+  }
+  .prose h3 { font-size: 1.28em; font-weight: 650; margin-block-start: 2.2rem; }
+  .prose h4 { font-size: 1.08em; font-weight: 650; margin-block-start: 1.8rem; }
+  .prose :is(h5, h6) { font-size: 1em; font-weight: 650; margin-block-start: 1.6rem; color: var(--texte); }
+  .prose :is(h2, h3, h4, h5, h6) + * { margin-block-start: 0.75em; }
+
+  .ancre {
+    margin-inline-start: 0.45em;
+    color: var(--texte-attenue);
+    font-weight: 500;
+    text-decoration: none;
+    opacity: 0;
+  }
+  :is(h2, h3, h4, h5, h6):hover .ancre, .ancre:focus-visible { opacity: 1; }
+  .ancre:hover { color: var(--cyan); }
+  @media (hover: none) { .ancre { opacity: 0.55; } }
+
+  .prose strong { color: var(--texte-fort); font-weight: 650; }
+  .prose em { color: #e1e3ee; }
+
+  .prose :is(ul, ol) { padding-inline-start: 1.4em; }
+  .prose li + li, .prose li > :is(ul, ol) { margin-block-start: 0.45em; }
+  .prose li > p + p { margin-block-start: 0.6em; }
+  .prose ul > li::marker { color: var(--violet); }
+  .prose ol > li::marker { color: var(--cyan); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .prose li:has(> input[type="checkbox"]) { list-style: none; margin-inline-start: -1.4em; }
+  .prose input[type="checkbox"] { accent-color: var(--violet); margin-inline-end: 0.5em; vertical-align: -0.1em; }
+
+  .prose a.externe::after {
+    content: "↗";
+    content: "↗" / "";
+    display: inline-block;
+    margin-inline-start: 0.12em;
+    font-size: 0.78em;
+    text-decoration: none;
+    color: var(--texte-attenue);
+  }
+
+  .prose blockquote {
+    padding: 0.9rem 1.25rem;
+    border-inline-start: 3px solid var(--violet);
+    background: var(--surface);
+    border-radius: 0 var(--rayon) var(--rayon) 0;
+    color: #c9ccdb;
+  }
+  .prose blockquote > * + * { margin-block-start: 0.7em; }
+
+  .alerte {
+    --teinte: var(--cyan);
+    padding: 1rem 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--teinte) 30%, transparent);
+    border-inline-start: 3px solid var(--teinte);
+    border-radius: var(--rayon-petit) var(--rayon) var(--rayon) var(--rayon-petit);
+    background: color-mix(in srgb, var(--teinte) 7%, var(--fond));
+  }
+  .alerte > * + * { margin-block-start: 0.6em; }
+  .alerte-titre { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--teinte); }
+  .alerte-icone { inline-size: 1.15em; block-size: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .alerte-tip { --teinte: var(--vert); }
+  .alerte-important { --teinte: var(--violet); }
+  .alerte-warning { --teinte: var(--ambre); }
+  .alerte-caution { --teinte: #ff9a9a; }
+
+  .prose hr { border: 0; block-size: 1px; background: linear-gradient(90deg, transparent, var(--bordure), transparent); margin-block: 2.5rem; }
+
+  .prose img { border-radius: var(--rayon-petit); }
+  .prose p > img:only-child { margin-inline: auto; }
+
+  .tableau {
+    overflow-x: auto;
+    border: 1px solid var(--bordure-douce);
+    border-radius: var(--rayon);
+    background: var(--surface);
+  }
+  .tableau table { inline-size: 100%; border-collapse: collapse; font-size: 0.94em; line-height: 1.5; font-variant-numeric: tabular-nums; }
+  .tableau th, .tableau td { padding: 0.65rem 1rem; text-align: start; vertical-align: top; }
+  .tableau thead th { background: var(--surface-2); color: var(--texte-fort); font-weight: 650; white-space: nowrap; }
+  .tableau tbody tr + tr { border-block-start: 1px solid var(--bordure-douce); }
+  .tableau tbody tr:hover { background: rgb(255 255 255 / 0.025); }
+  .tableau th[align="center"], .tableau td[align="center"] { text-align: center; }
+  .tableau th[align="right"], .tableau td[align="right"] { text-align: end; }
+
+  .evitement {
+    position: absolute;
+    inset-inline-start: 1rem;
+    inset-block-start: -10rem;
+    z-index: 20;
+    padding: 0.6rem 1rem;
+    background: var(--texte-fort);
+    color: var(--fond);
+    border-radius: var(--rayon-petit);
+    font-weight: 650;
+    text-decoration: none;
+  }
+  .evitement:focus { inset-block-start: 1rem; }
+}
+
+@layer code {
+  :not(pre) > code {
+    font-family: var(--police-code);
+    font-size: 0.87em;
+    padding: 0.1em 0.32em;
+    border-radius: 0.3rem;
+    background: var(--code-inline-fond);
+    color: var(--code-inline);
+    box-shadow: inset 0 0 0 1px rgb(255 180 110 / 0.13);
+    font-variant-ligatures: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  a > code { color: inherit; }
+
+  .code {
+    border: 1px solid var(--bordure-douce);
+    border-radius: var(--rayon);
+    background: var(--code-fond);
+    overflow: hidden;
+  }
+  .code-tete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.35rem 0.5rem 0.35rem 1rem;
+    border-block-end: 1px solid var(--bordure-douce);
+    background: var(--surface);
+  }
+  .code-langue { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--texte-attenue); }
+  .copier {
+    padding: 0.2rem 0.75rem;
+    border: 1px solid var(--bordure);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte-attenue);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-block-size: 1.75rem;
+  }
+  .copier:hover { color: var(--texte-fort); border-color: var(--violet); background: var(--surface-2); }
+  .copier[data-etat="ok"] { color: var(--vert); border-color: currentColor; }
+
+  .code pre {
+    margin: 0;
+    padding: 1rem 1.15rem;
+    overflow-x: auto;
+    font-family: var(--police-code);
+    font-size: 0.88em;
+    line-height: 1.65;
+    tab-size: 2;
+    color: #dfe2ee;
+    font-variant-ligatures: none;
+  }
+  .code pre:focus-visible { outline-offset: -2px; border-radius: 0; }
+
+  /* Coloration highlight.js : chaque teinte >= 7:1 sur --code-fond, commentaires >= 5,5:1 */
+  .hljs-comment, .hljs-quote { color: #aeb2c4; font-style: italic; }
+  .hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-doctag { color: #c3b1ff; }
+  .hljs-string, .hljs-regexp, .hljs-addition, .hljs-template-tag { color: #9fe3b4; }
+  .hljs-number, .hljs-symbol, .hljs-bullet, .hljs-link { color: #ffc98a; }
+  .hljs-title, .hljs-title.function_, .hljs-section { color: #8fc2ff; }
+  .hljs-built_in, .hljs-type, .hljs-title.class_, .hljs-meta { color: #79d8f2; }
+  .hljs-attr, .hljs-attribute, .hljs-name, .hljs-selector-class, .hljs-selector-id { color: #ffabd6; }
+  .hljs-variable, .hljs-template-variable, .hljs-params, .hljs-property { color: #f5c595; }
+  .hljs-deletion { color: #ffa3a3; }
+  .hljs-emphasis { font-style: italic; }
+  .hljs-strong { font-weight: 700; }
+}
+
+@layer utilitaires {
+  .visuellement-cache {
+    position: absolute !important;
+    inline-size: 1px; block-size: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (forced-colors: active) {
+    .entete h1 { color: CanvasText; background: none; }
+    .progression, .prose h2::before { display: none; }
+    .sommaire a[aria-current] { border-inline-start-color: Highlight; }
+  }
+
+  @media print {
+    :root { --fond: #fff; --texte: #1a1a1a; --texte-fort: #000; --texte-attenue: #444; --lien: #0645ad; --code-fond: #f6f6f8; --code-inline-fond: #eee; --code-inline: #6b2c00; --surface: #f6f6f8; --surface-2: #ececf0; --bordure: #ccc; --bordure-douce: #ddd; color-scheme: light; }
+    body { background: #fff; font-size: 11pt; }
+    .entete h1 { color: #000; background: none; }
+    .sommaire, .progression, .copier, .ancre, .evitement { display: none !important; }
+    .grille { grid-template-columns: 1fr !important; }
+    .code pre { white-space: pre-wrap; color: #1a1a1a; }
+    .prose a.externe::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+    .prose :is(h2, h3) { break-after: avoid; }
+    .code, .tableau, .alerte { break-inside: avoid; }
+  }
+}
+</style>
+</head>
+<body>
+<a class="evitement" href="#contenu">Skip to content</a>
+<div class="progression" aria-hidden="true"></div>
+<header class="entete">
+<div class="aurore" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="grille">
+<div class="entete-texte">
+<nav class="langues" aria-label="Language"><ul><li><span aria-current="page" lang="en">English</span></li><li><a href="README.fr.html" hreflang="fr" lang="fr">Français</a></li></ul></nav>
+<h1>TW-Scroll-Layout</h1>
+<div class="chapo">
+<p>A TiddlyWiki layout plugin that gives the story river, sidebar tabs, and tab content their own independent scroll areas. The page no longer scrolls as a whole — each zone scrolls in place.</p>
+</div>
+<p class="badges"><img src="https://img.shields.io/badge/status-experimental-orange" alt="Status" loading="lazy" decoding="async">
+<img src="https://img.shields.io/badge/TiddlyWiki-%E2%89%A55.3.0-blue" alt="TiddlyWiki" loading="lazy" decoding="async"></p>
+</div>
+</div>
+</header>
+<div class="grille corps">
+<nav class="sommaire" aria-labelledby="sommaire-titre">
+<h2 id="sommaire-titre">Contents</h2>
+<ol><li><a href="#overview">Overview</a></li><li><a href="#features">Features</a></li><li><a href="#installation">Installation</a></li><li><a href="#development">Development</a></li><li><a href="#files">Files</a></li><li><a href="#compatibility">Compatibility</a></li><li><a href="#version-history">Version history</a></li><li><a href="#license">License</a></li></ol>
+</nav>
+<main id="contenu" tabindex="-1">
+<article class="prose">
+<h2 id="overview">Overview<a class="ancre" href="#overview"><span class="visuellement-cache">Link to section « Overview »</span><span aria-hidden="true">#</span></a></h2>
+<p>By default, TiddlyWiki scrolls the entire browser window. This plugin replaces that behaviour with isolated scroll areas:</p>
+<ul>
+<li><strong>Story river</strong> — scrolls independently inside its column</li>
+<li><strong>Sidebar tab content</strong> — scrolls independently inside the tab panel</li>
+<li><strong>Sidebar tab bar</strong> — stays fixed; only the content below it scrolls</li>
+</ul>
+<p>Everything else (topbar, sidebar header, layout chrome) remains fixed on screen.</p>
+<p>The plugin activates only when its layout is selected (<code>$:/layout</code> = <code>$:/plugins/nikorion/scroll-layout/layout</code>). All other layouts fall back to exact core behaviour — no side effects when the layout is inactive.</p>
+<h2 id="features">Features<a class="ancre" href="#features"><span class="visuellement-cache">Link to section « Features »</span><span aria-hidden="true">#</span></a></h2>
+<p><strong>Independent scroll areas</strong></p>
+<p>The story river becomes a <code>$scrollable</code> widget (<code>fallthrough=&quot;no&quot;</code>), which intercepts all scroll events and scrolls the river column instead of the window. The sidebar uses a full flex chain so height propagates from <code>.tc-sidebar-scrollable</code> down to the tab content panel, which is the only scrolling node.</p>
+<p><strong>Sticky tiddler titles</strong></p>
+<p>When the <code>stickytitles</code> option is enabled in the Vanilla theme, tiddler titles stick to the top of the story river as you scroll. The plugin gates this behaviour on the same theme option, so disabling sticky titles in theme settings also disables it here.</p>
+<p>When a sticky title detaches from its frame (the frame has scrolled above the river&#39;s top edge), the class <code>tc-tiddler-stuck</code> is added to the title element. This triggers a visual treatment: negative side margins extend the bar edge-to-edge, and a drop shadow signals the detached state.</p>
+<p><strong>Sidebar layout support</strong></p>
+<p>Both Vanilla sidebar layouts are handled:</p>
+<div class="tableau" role="region" tabindex="0" aria-label="Layout · Behaviour">
+<table>
+<thead>
+<tr>
+<th>Layout</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fixed-fluid</code></td>
+<td>River width = <code>storyright − storyleft</code>; sidebar aligned to its boundary</td>
+</tr>
+<tr>
+<td><code>fluid-fixed</code></td>
+<td>River is <code>width:auto</code> with <code>margin-right: sidebarwidth + 6px</code>; sidebar gets a left padding</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>When the sidebar is hidden, the river expands to fill the available width automatically.</p>
+<p><strong>Scroll-into-view patch</strong></p>
+<p>The classic storyview calls <code>$tw.pageScroller.scrollIntoView()</code>, which scrolls the browser window. When the river is a <code>$scrollable</code> widget, <code>overflow:hidden</code> on <code>body</code> prevents window scrolling — newly opened tiddlers would not scroll into view.</p>
+<p>The startup module patches <code>$tw.pageScroller.scrollIntoView</code>: when the target element is inside <code>.tc-story-river</code>, the patch uses the browser-native <code>element.scrollIntoView()</code> instead, which scrolls the nearest scrollable ancestor (the <code>$scrollable</code> widget&#39;s inner div). A <code>requestAnimationFrame</code> defers the check so newly inserted DOM nodes have time to connect before <code>closest()</code> runs.</p>
+<h2 id="installation">Installation<a class="ancre" href="#installation"><span class="visuellement-cache">Link to section « Installation »</span><span aria-hidden="true">#</span></a></h2>
+<p><strong>Live demo</strong>: <a href="https://nikorion.github.io/TW-Scroll-Layout/" class="externe" rel="noopener">https://nikorion.github.io/TW-Scroll-Layout/</a> — try the plugin before installing it.</p>
+<p><strong>From the nikorion plugin library</strong> (TiddlyWiki then offers each new version as an update):</p>
+<ol>
+<li>On <a href="https://nikorion.github.io/TW-Plugin-Library/" class="externe" rel="noopener">nikorion.github.io/TW-Plugin-Library</a>, drag the <strong>nikorion plugin library</strong> button onto your wiki (once per wiki).</li>
+<li>Open <em>Control Panel → Plugins → Get more plugins → Open plugin library</em>, choose the nikorion tab and install <strong>Scroll Layout</strong>.</li>
+</ol>
+<p><strong>By hand</strong>: download <a href="https://nikorion.github.io/TW-Scroll-Layout/TW-Scroll-Layout-Plugin.json" class="externe" rel="noopener"><code>TW-Scroll-Layout-Plugin.json</code></a> and drag it onto your wiki.</p>
+<p>Requires TiddlyWiki ≥ 5.3.0.</p>
+<p>Then open the layout picker (gear icon → Layout) and select <strong>Nikorion layout</strong>.</p>
+<h2 id="development">Development<a class="ancre" href="#development"><span class="visuellement-cache">Link to section « Development »</span><span aria-hidden="true">#</span></a></h2>
+<p>Clone <a href="https://github.com/nikorion/tw-dev" class="externe" rel="noopener">tw-dev</a> next to this repository: <code>pnpm dev</code> runs it, and it links by itself the nikorion plugins the dev wiki loads — from clones sitting next to this one (<code>../TW-Math</code>…), so your edits to them are live, otherwise from a read-only copy it fetches from GitHub. No symlink, no <code>TIDDLYWIKI_PLUGIN_PATH</code>, no admin rights. <code>pnpm build</code> alone still needs <code>TIDDLYWIKI_PLUGIN_PATH</code>: point it to <code>../tw-dev/.state/TW-Scroll-Layout/plugins</code>, created by <code>pnpm dev</code>.</p>
+<div class="code" role="group" aria-labelledby="code-1-l">
+<div class="code-tete"><span class="code-langue" id="code-1-l">Shell</span><button type="button" class="copier" data-copier hidden aria-describedby="code-1-l">Copy</button></div>
+<pre tabindex="0"><code class="hljs language-bash">pnpm install
+pnpm dev      <span class="hljs-comment"># dev wiki + hot reload; the URL (random free port) is printed on start</span>
+pnpm build    <span class="hljs-comment"># dist/TW-Scroll-Layout-Plugin.json + docs/ (demo wiki, published by CI)</span></code></pre>
+</div>
+<p>Sources are in <code>src/scroll-layout/</code>. The dev wiki is in <code>wiki/</code>. <code>pnpm dev</code> runs the shared dev server <code>../tw-dev</code> (cloned next to this repository), which pairs nodemon (reboots TW only on JS module / <code>plugin.info</code> changes) with an SSE content-HMR server: content tiddlers (<code>.tid</code>, <code>.multids</code>, <code>.css</code>…) are hot-swapped in the browser with state preserved, while module changes trigger a reboot then a full reload once TW is back up.</p>
+<h2 id="files">Files<a class="ancre" href="#files"><span class="visuellement-cache">Link to section « Files »</span><span aria-hidden="true">#</span></a></h2>
+<div class="tableau" role="region" tabindex="0" aria-label="File · Role">
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/scroll-layout/plugin.info</code></td>
+<td>Plugin metadata</td>
+</tr>
+<tr>
+<td><code>src/scroll-layout/layout.tid</code></td>
+<td>Layout entry point (tag <code>$:/tags/Layout</code>) — transclude core page template</td>
+</tr>
+<tr>
+<td><code>src/scroll-layout/story.tid</code></td>
+<td>Shadow override of <code>$:/core/ui/PageTemplate/story</code> — wraps story river in <code>$scrollable</code></td>
+</tr>
+<tr>
+<td><code>src/scroll-layout/stylesheet.tid</code></td>
+<td>All CSS — gated on the layout being active</td>
+</tr>
+<tr>
+<td><code>src/scroll-layout/modules/startup.js</code></td>
+<td><code>$tw.pageScroller</code> patch + <code>tc-tiddler-stuck</code> scroll listener</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="compatibility">Compatibility<a class="ancre" href="#compatibility"><span class="visuellement-cache">Link to section « Compatibility »</span><span aria-hidden="true">#</span></a></h2>
+<ul>
+<li>TiddlyWiki ≥ 5.3.0</li>
+<li>Vanilla theme (the CSS targets Vanilla&#39;s metric tiddlers and class names)</li>
+<li>No external dependencies</li>
+</ul>
+<h2 id="version-history">Version history<a class="ancre" href="#version-history"><span class="visuellement-cache">Link to section « Version history »</span><span aria-hidden="true">#</span></a></h2>
+<p><strong>v2.1.0 (2026-10-11)</strong></p>
+<p>Renamed back to Scroll Layout: plugin <code>$:/plugins/nikorion/scroll-layout</code>, config namespace <code>$:/config/nikorion/scroll-layout/</code>, short name <code>scroll-layout</code>, repository <code>TW-Scroll-Layout</code>. The layout is still listed as &quot;Nikorion layout&quot;.</p>
+<p><strong>v2.0.0 (2026-10-11)</strong></p>
+<p>Renamed from Scroll Layout to Layout (plugin <code>$:/plugins/nikorion/layout</code>, config namespace <code>$:/config/nikorion/layout/</code>). The layout is listed as &quot;Nikorion layout&quot; and translated.</p>
+<p><strong>v1.2.0 (2026-08-18)</strong></p>
+<p><em>fluid-fixed</em>: restored a free gutter between the story river and the sidebar, matching the 42px one on the left of the story (vanilla leaves none there). The river absorbs it, the sidebar keeps its exact vanilla geometry. The river&#39;s scrollbar is drawn inside that gutter, at its left end, glued to the story content.</p>
+<p><strong>v1.1.0 (2026-08-17)</strong></p>
+<p>Localised the licence and the version history: <code>licence.tid</code> and <code>history.tid</code> are now language selectors that fall back to en-GB, like <code>readme.tid</code>. The licence body stays in English in every language.</p>
+<p><strong>v1.0.0 (2026-07-16)</strong></p>
+<p>Initial release. Isolated scroll areas for story river and sidebar tab content. Sticky titles with <code>tc-tiddler-stuck</code> detached-frame state. <code>$tw.pageScroller</code> patch for scroll-into-view in <code>$scrollable</code> containers. Full support for fixed-fluid and fluid-fixed sidebar layouts with sidebar-hidden fallback.</p>
+<h2 id="license">License<a class="ancre" href="#license"><span class="visuellement-cache">Link to section « License »</span><span aria-hidden="true">#</span></a></h2>
+<p>MIT License — see <code>LICENSE</code></p>
+</article>
+</main>
+</div>
+<footer class="pied">
+<div class="grille">
+<p>Page generated from <code>README.md</code> · <time datetime="2026-10-19">October 19, 2026</time> · <a href="#contenu">Back to top</a></p>
+</div>
+</footer>
+<p class="visuellement-cache" role="status" id="annonce"></p>
+<script type="module" data-copie-ok="Code copied to clipboard" data-copie-echec="Copy failed: the code is selected, press Ctrl+C">
+// Amélioration progressive : la page reste complète sans JavaScript.
+const reglages = document.querySelector('script[data-copie-ok]').dataset;
+const annonce = document.getElementById('annonce');
+const dire = (texte) => { annonce.textContent = ''; requestAnimationFrame(() => { annonce.textContent = texte; }); };
+
+// Boutons « Copier » des blocs de code
+for (const bouton of document.querySelectorAll('[data-copier]')) {
+  const libelle = bouton.textContent;
+  bouton.hidden = false;
+  bouton.addEventListener('click', async () => {
+    const code = bouton.closest('.code').querySelector('code');
+    try {
+      await navigator.clipboard.writeText(code.innerText.replace(/\n$/, ''));
+      bouton.dataset.etat = 'ok';
+      bouton.textContent = '✓';
+      dire(reglages.copieOk);
+    } catch {
+      getSelection().selectAllChildren(code);
+      dire(reglages.copieEchec);
+    }
+    setTimeout(() => { bouton.textContent = libelle; delete bouton.dataset.etat; }, 1800);
+  });
+}
+
+// Sommaire : section en cours de lecture
+const liens = new Map([...document.querySelectorAll('.sommaire a')].map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+if (liens.size && 'IntersectionObserver' in window) {
+  const titres = [...document.querySelectorAll('.prose :is(h2, h3)[id]')].filter((h) => liens.has(h.id));
+  const visibles = new Set();
+  let actif = null;
+  const activer = (id) => {
+    if (id === actif) return;
+    liens.get(actif)?.removeAttribute('aria-current');
+    actif = id;
+    const lien = liens.get(id);
+    if (!lien) return;
+    lien.setAttribute('aria-current', 'location');
+    const sommaire = lien.closest('.sommaire');
+    if (sommaire.scrollHeight > sommaire.clientHeight) lien.scrollIntoView({ block: 'nearest' });
+  };
+  const observateur = new IntersectionObserver((entrees) => {
+    for (const e of entrees) e.isIntersecting ? visibles.add(e.target) : visibles.delete(e.target);
+    const premier = titres.find((h) => visibles.has(h));
+    if (premier) return activer(premier.id);
+    const dessus = titres.filter((h) => h.getBoundingClientRect().top < 0).at(-1);
+    activer(dessus?.id ?? titres[0]?.id);
+  }, { rootMargin: '0px 0px -65% 0px' });
+  titres.forEach((h) => observateur.observe(h));
+}
+</script>
+</body>
+</html>
